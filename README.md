@@ -2,17 +2,16 @@
 
 Welcome to **rzn.AI** – an innovative AI-driven solution designed to [briefly describe the core function of the app]. This repository contains the source code and documentation to get you started with deploying and contributing to **rzn.AI**.
 
-![rzn.AI Logo](https://github.com/3d3n-ops/rzn.AI/blob/main/path_to_your_logo.png)  <!-- Replace with the actual path to the logo image -->
+![rzn.AI Logo](https://github.com/3d3n-ops/rzn.AI/public/Screenshot 2025-02-26 121334.png)  <!-- Replace with the actual path to the logo image -->
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Features](#features)
+- [Ethos](#ethos)
 - [Getting Started](#getting-started)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [Contributions & License](#contributions&license)
 - [Contact](#contact)
 
 ## Introduction
