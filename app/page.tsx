@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { ThemeToggle } from "@/components/theme-switcher";
 
 export default function Home() {
   // Placeholder data for graphs
@@ -39,6 +40,7 @@ export default function Home() {
                 </span>
               </Link>
               <div className="flex items-center gap-4">
+                <ThemeToggle />
                 <Link
                   href="/blog"
                   className="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
