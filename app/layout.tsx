@@ -5,7 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "rzn.AI - Your Personal Research Assistant",
+  title: "rzn.AI - Deep Learning through Reasoning",
   description: "Analyze files and web pages with AI assistance",
   generator: "v0.dev",
 };
