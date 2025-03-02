@@ -47,14 +47,14 @@ export default function Home() {
                 >
                   Blog
                 </Link>
-                <Button variant="ghost" className="text-sm">
-                  Sign in
+                <Button asChild variant="ghost" className="text-sm">
+                  <Link href="/sign-in"> Sign in</Link>
                 </Button>
                 <Button
                   asChild
                   className="bg-gray-900 text-white hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700"
                 >
-                  <Link href="/dashboard">Register</Link>
+                  <Link href="/sign-up">Register</Link>
                 </Button>
               </div>
             </div>
@@ -86,7 +86,7 @@ export default function Home() {
                 asChild
                 className="h-12 px-8 text-lg bg-gray-900 hover:bg-gray-800 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
               >
-                <Link href="/dashboard"> Use rzn.AI for free</Link>
+                <Link href="/sign-up"> Use rzn.AI for free</Link>
               </Button>
             </div>
 
@@ -440,8 +440,8 @@ export default function Home() {
             </section>
 
             {/* Footer CTA */}
-            <section className="py-32 bg-gray-900 dark:bg-black relative">
-              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent opacity-50" />
+            <section className="py-32 bg-gray-900 dark:bg-black relative rounded-xl">
+              <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-transparent opacity-50 rounded-xl" />
               <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
                   <h2 className="text-4xl font-bold text-white mb-6">
