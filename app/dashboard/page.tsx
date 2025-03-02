@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ModelSelector } from "@/components/model-selector";
 import { ThemeToggle } from "@/components/theme-switcher";
 import Link from "next/link";
-import { AppSidebar } from "@/components/app-sidebar";
 
 const categories = [
   { id: "stem", name: "STEM", color: "bg-blue-500" },
@@ -36,7 +35,6 @@ export default function Dashboard() {
       </header>
 
       <main className="container mx-auto px-4 pt-32 pb-16">
-        <AppSidebar />
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-6xl font-bold mb-8">
             <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
