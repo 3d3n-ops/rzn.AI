@@ -92,7 +92,6 @@ export default function Dashboard() {
                   size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <Upload className="mr-2 h-5 w-5" />
                   Chat
                 </Button>
               </PopoverTrigger>
