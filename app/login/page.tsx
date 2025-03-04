@@ -32,7 +32,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Login to rzn.AI
+              Login to Ryzn
             </span>
           </CardTitle>
           <CardDescription>

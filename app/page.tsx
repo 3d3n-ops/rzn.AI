@@ -83,7 +83,17 @@ export default function Home() {
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden max-w-5xl mx-auto">
                 <div className="aspect-[16/9] relative">
                   <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 animate-pulse" />
-                  {/* Replace with actual product screenshot */}
+                  <video
+                    className="w-full h-full object-cover absolute inset-0"
+                    controls
+                    preload="none"
+                  >
+                    <source
+                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                      type="video/mp4"
+                    />
+                    <track src="" kind="src/Lang" label="English" />
+                  </video>
                 </div>
               </div>
             </div>
@@ -132,7 +142,11 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg aspect-video">
-                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-gray-800 rounded-lg" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Ryzn Generated Notes"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
                     </div>
                   </div>
@@ -169,7 +183,11 @@ export default function Home() {
                     </div>
                     <div className="flex-1 order-1 md:order-2">
                       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg aspect-video">
-                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-gray-800 rounded-lg" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Select%20Files%20-ba4ojlYSBdtGzY0fZfZfUNk9ptcuQl.png"
+                          alt="Ryzn Generated Notes"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
                     </div>
                   </div>
@@ -206,7 +224,11 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg aspect-video">
-                        <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-900 dark:to-gray-800 rounded-lg" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Ryzn Generated Quiz"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
                       </div>
                     </div>
                   </div>
@@ -250,9 +272,9 @@ export default function Home() {
                     <div className="flex-1 order-1 md:order-2">
                       <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg aspect-video">
                         <img
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-02-25%20141015-LESjlHsm8JM1YhNG1TvJiXhwmlAlyS.png"
-                          alt="AI Models Integration"
-                          className="max-w-md"
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Model%20Selection%20LLM-e8c0C98CkQYdjnlV8DLgSG3TobNCXY.png"
+                          alt="Ryzn AI Model Integration"
+                          className="w-full h-full object-cover rounded-lg"
                         />
                       </div>
                     </div>
