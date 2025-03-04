@@ -202,96 +202,6 @@ export default function OnboardingPage() {
     }
   };
 
-  // Add test function
-  const testDatabaseConnection = async () => {
-    if (!user) {
-      toast({
-        title: "Authentication error",
-        description: "Please sign in to test the connection",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      console.log("Testing database connection with user ID:", user.id);
-
-      // Step 1: Try to create a test profile
-      const testProfile = {
-        id: user.id,
-        full_name: "Test User",
-        education_level: "test",
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log("Attempting to create test profile:", testProfile);
-
-      const { data: profileData, error: profileError } = await supabase
-        .from("user_profiles")
-        .upsert(testProfile)
-        .select()
-        .single();
-
-      if (profileError) {
-        console.error("Profile Error Details:", profileError);
-        throw new Error(`Profile Error: ${profileError.message}`);
-      }
-
-      console.log("Successfully created test profile:", profileData);
-
-      // Step 2: Try to create a test course
-      const testCourse = {
-        user_id: user.id,
-        name: "Test Course",
-        description: "Test Description",
-        created_at: new Date().toISOString(),
-      };
-
-      console.log("Attempting to create test course:", testCourse);
-
-      const { data: courseData, error: courseError } = await supabase
-        .from("courses")
-        .insert(testCourse)
-        .select()
-        .single();
-
-      if (courseError) {
-        console.error("Course Error Details:", courseError);
-        throw new Error(`Course Error: ${courseError.message}`);
-      }
-
-      console.log("Successfully created test course:", courseData);
-
-      // Step 3: Clean up test data
-      console.log("Attempting to clean up test data");
-
-      const { error: deleteError } = await supabase
-        .from("courses")
-        .delete()
-        .eq("name", "Test Course")
-        .eq("user_id", user.id);
-
-      if (deleteError) {
-        console.error("Delete Error Details:", deleteError);
-        throw new Error(`Delete Error: ${deleteError.message}`);
-      }
-
-      console.log("Successfully cleaned up test data");
-
-      toast({
-        title: "Success!",
-        description: "Database connection and schema are working correctly",
-      });
-    } catch (error) {
-      console.error("Database test error:", error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Test failed",
-        variant: "destructive",
-      });
-    }
-  };
-
   // Show loading state while checking authentication
   if (!isLoaded) {
     return (
@@ -314,14 +224,6 @@ export default function OnboardingPage() {
             Let's personalize your learning experience. Please fill out the
             following information.
           </CardDescription>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={testDatabaseConnection}
-            className="mt-4"
-          >
-            Test Database Connection
-          </Button>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6">
