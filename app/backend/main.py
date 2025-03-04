@@ -55,16 +55,16 @@ async def test_config():
 # Endpoint to handle speech-to-text with Whisper
 @app.post("/api/transcribe")
 async def transcribe_audio(file: UploadFile = File(...)):
-    if not file:
+    if not OPENAI_API_KEY:
         return JSONResponse(
-            status_code=400,
-            content={"detail": "No audio file provided"},
+            status_code=500,
+            content={"detail": "OpenAI API key not configured"},
             headers={
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials": "true",
             }
         )
-    
+        
     try:
         # Read file contents
         contents = await file.read()
@@ -75,6 +75,8 @@ async def transcribe_audio(file: UploadFile = File(...)):
             headers = {
                 'Authorization': f'Bearer {OPENAI_API_KEY}'
             }
+            print(f"File type: {file.content_type}, File size: {len(contents)} bytes")  # Debug info
+            
             response = await client.post(
                 'https://api.openai.com/v1/audio/transcriptions',
                 files=files,
@@ -82,16 +84,18 @@ async def transcribe_audio(file: UploadFile = File(...)):
                 headers=headers,
                 timeout=30.0
             )
-        
-        if response.status_code != 200:
-            return JSONResponse(
-                status_code=response.status_code,
-                content={"detail": "Error transcribing audio"},
-                headers={
-                    "Access-Control-Allow-Origin": "http://localhost:3000",
-                    "Access-Control-Allow-Credentials": "true",
-                }
-            )
+            
+            if response.status_code != 200:
+                error_detail = await response.json()
+                print(f"OpenAI API Error: {error_detail}")  # Debug info
+                return JSONResponse(
+                    status_code=response.status_code,
+                    content={"detail": error_detail},
+                    headers={
+                        "Access-Control-Allow-Origin": "http://localhost:3000",
+                        "Access-Control-Allow-Credentials": "true",
+                    }
+                )
         
         return JSONResponse(
             content=response.json(),
