@@ -14,19 +14,6 @@ import {
 import { ThemeToggle } from "@/components/theme-switcher";
 
 export default function Home() {
-  // Placeholder data for graphs
-  const retentionData = [
-    { name: "Traditional", value: 20 },
-    { name: "rzn.AI", value: 80 },
-  ];
-
-  const comprehensionData = [
-    { name: "Week 1", traditional: 30, rzn: 45 },
-    { name: "Week 2", traditional: 40, rzn: 60 },
-    { name: "Week 3", traditional: 45, rzn: 75 },
-    { name: "Week 4", traditional: 50, rzn: 90 },
-  ];
-
   return (
     <div>
       <div className="min-h-screen bg-[#fafafa] dark:bg-gray-900">
@@ -36,7 +23,7 @@ export default function Home() {
             <div className="flex items-center justify-between h-16">
               <Link href="/" className="flex items-center space-x-2">
                 <span className="text-xl font-semibold bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
-                  rzn.AI
+                  Ryzn
                 </span>
               </Link>
               <div className="flex items-center gap-4">
@@ -86,27 +73,8 @@ export default function Home() {
                 asChild
                 className="h-12 px-8 text-lg bg-gray-900 hover:bg-gray-800 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
               >
-                <Link href="/sign-up"> Use rzn.AI for free</Link>
+                <Link href="/sign-up"> Try Ryzn Now!</Link>
               </Button>
-            </div>
-
-            {/* Social Proof */}
-            <div className="mt-24 text-center">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
-                Relied on by 500,000+ students at
-              </p>
-              <div className="flex justify-center items-center gap-12 flex-wrap opacity-60">
-                {["Stanford", "Harvard", "Princeton", "Columbia"].map(
-                  (school) => (
-                    <div
-                      key={school}
-                      className="text-xl font-serif text-gray-400 dark:text-gray-500"
-                    >
-                      {school}
-                    </div>
-                  )
-                )}
-              </div>
             </div>
 
             {/* Product Preview */}
@@ -209,7 +177,7 @@ export default function Home() {
                   <div className="flex flex-col md:flex-row items-center gap-12">
                     <div className="flex-1">
                       <h3 className="text-2xl font-semibold mb-4">
-                        Deep Learning with rzn
+                        Deep Learning with Ryzn
                       </h3>
                       <p className="text-gray-600 dark:text-gray-300 mb-6">
                         Engaging voice chat AI to prime you into thinking deeper
@@ -249,7 +217,7 @@ export default function Home() {
                         Latest Technology
                       </h3>
                       <p className="text-gray-600 dark:text-gray-300 mb-6">
-                        rzn is powered by the best AI models available at your
+                        Ryzn is powered by the best AI models available at your
                         choice for engaging learning.
                       </p>
                       <ul className="space-y-2">
@@ -289,104 +257,6 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </section>
-            {/* Evidence-Based Research Section */}
-            <section className="py-32 bg-gray-50 dark:bg-gray-800/50 relative">
-              <div className="container mx-auto px-4">
-                <h2 className="text-4xl font-bold mb-8 text-center">
-                  Evidence-Based Learning
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto text-center">
-                  Research shows that communicating your thought process, like
-                  in the Feynman Technique, significantly improves learning
-                  outcomes. rzn.AI leverages this principle to supercharge your
-                  studies.
-                </p>
-
-                <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                  <div className="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg">
-                    <h3 className="text-2xl font-semibold mb-4">
-                      Information Retention
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={retentionData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="value" fill="#3b82f6" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                    <p className="mt-4 text-gray-600 dark:text-gray-300">
-                      Students using rzn.AI show a 300% increase in information
-                      retention compared to traditional methods.
-                    </p>
-                  </div>
-
-                  <div className="bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg">
-                    <h3 className="text-2xl font-semibold mb-4">
-                      Comprehension Over Time
-                    </h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={comprehensionData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar
-                          dataKey="traditional"
-                          fill="#9ca3af"
-                          name="Traditional"
-                        />
-                        <Bar dataKey="rzn" fill="#3b82f6" name="rzn.AI" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                    <p className="mt-4 text-gray-600 dark:text-gray-300">
-                      rzn.AI users consistently outperform traditional learners
-                      in comprehension tests over time.
-                    </p>
-                  </div>
-
-                  <div className="md:col-span-2 bg-white dark:bg-gray-700 rounded-xl p-6 shadow-lg">
-                    <h3 className="text-2xl font-semibold mb-4">Key Metrics</h3>
-                    <div className="grid grid-cols-3 gap-6">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                          94%
-                        </div>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          of users report improved grades
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                          78%
-                        </div>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          reduction in study time
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                          3.2x
-                        </div>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          increase in learning speed
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-16 text-center">
-                  <Link href="/dashboard">
-                    {" "}
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white h-12 px-8 rounded-full text-lg">
-                      Experience the Difference
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </section>
@@ -445,15 +315,15 @@ export default function Home() {
               <div className="container mx-auto px-4 relative z-10">
                 <div className="text-center max-w-3xl mx-auto">
                   <h2 className="text-4xl font-bold text-white mb-6">
-                    With rzn, you no longer have a reason to not study.
+                    With Ryzn, you no longer have a reason to not study.
                   </h2>
                   <p className="text-xl text-gray-300 mb-8">
-                    Rzn: Deep Learning through Reason.
+                    Ryzn: Deep Learning through Reason.
                   </p>
                   <Link href="/dashboard">
                     {" "}
                     <Button className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg">
-                      Try rzn today!
+                      Try Ryzn today!
                     </Button>
                   </Link>
                 </div>

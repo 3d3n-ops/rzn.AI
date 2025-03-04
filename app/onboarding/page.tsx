@@ -217,7 +217,7 @@ export default function OnboardingPage() {
         <CardHeader>
           <CardTitle className="text-3xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
-              Welcome to rzn.AI
+              Welcome to Ryzn
             </span>
           </CardTitle>
           <CardDescription>
