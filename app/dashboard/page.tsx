@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Mic } from "lucide-react";
+import { Mic, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModelSelector } from "@/components/model-selector";
 import { ThemeToggle } from "@/components/theme-switcher";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const categories = [
   { id: "stem", name: "STEM", color: "bg-blue-500" },
@@ -16,6 +25,17 @@ const categories = [
 
 export default function Dashboard() {
   const [selectedModel, setSelectedModel] = useState("gpt-4");
+  const [uploadType, setUploadType] = useState("flashcards");
+  const [prompt, setPrompt] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically handle the file upload
+    // For now, we'll just redirect to chat
+    router.push("/demo2");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -65,13 +85,64 @@ export default function Dashboard() {
             ))}
           </div>
 
-          <Button
-            size="lg"
-            className="bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700"
-            asChild
-          >
-            <Link href="/chat">Chat</Link>
-          </Button>
+          <div className="flex justify-center mb-8">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Upload className="mr-2 h-5 w-5" />
+                  Chat
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="file">Upload File</Label>
+                    <Input
+                      id="file"
+                      type="file"
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Select Type</Label>
+                    <RadioGroup
+                      value={uploadType}
+                      onValueChange={setUploadType}
+                      className="flex gap-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="flashcards" id="flashcards" />
+                        <Label htmlFor="flashcards">Flashcards</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="practice" id="practice" />
+                        <Label htmlFor="practice">Practice</Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="prompt">Custom Prompt (Optional)</Label>
+                    <Input
+                      id="prompt"
+                      placeholder="Enter your prompt..."
+                      value={prompt}
+                      onChange={(e) => setPrompt(e.target.value)}
+                    />
+                  </div>
+
+                  <Button type="submit" className="w-full">
+                    Start Learning
+                  </Button>
+                </form>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </main>
     </div>
