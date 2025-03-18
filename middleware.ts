@@ -1,12 +1,44 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { authMiddleware } from "@clerk/nextjs";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import type { AuthObject } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+// This example protects all routes including api/trpc routes
+// Please edit this to allow other routes to be public as needed.
+export default authMiddleware({
+  publicRoutes: ["/", "/sign-in", "/sign-up"],
+  afterAuth(auth, req) {
+    // Redirect signed-in users away from auth pages
+    if (
+      auth.userId &&
+      ["/sign-in", "/sign-up"].includes(new URL(req.url).pathname)
+    ) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+
+    // Handle users who aren't authenticated
+    if (!auth.userId && !auth.isPublicRoute) {
+      const signInUrl = new URL("/sign-in", req.url);
+      signInUrl.searchParams.set("redirect_url", req.url);
+      return Response.redirect(signInUrl);
+    }
+
+    // Add authentication to Supabase requests
+    if (auth.userId) {
+      const requestHeaders = new Headers(req.headers);
+      requestHeaders.set("Authorization", `Bearer ${auth.userId}`);
+
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    return NextResponse.next();
+  },
+});
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
-  ],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

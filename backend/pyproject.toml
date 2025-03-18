@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rzn-ai-backend"
+version = "0.1.0"
+description = "Backend for RZN AI application"
+requires-python = ">=3.8"
+dependencies = [
+    "fastapi>=0.68.0",
+    "uvicorn>=0.15.0",
+    "python-dotenv>=0.19.0",
+    "httpx>=0.24.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"] 
