@@ -25,10 +25,16 @@ export async function POST(request: NextRequest) {
 
     console.log(`Received file: ${file.name}, size: ${file.size} bytes`);
 
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_API_QUIZ ||
-      "http://localhost:8001/api/quiz";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_API_QUIZ;
     console.log(`Forwarding to backend: ${backendUrl}`);
+
+    if (!backendUrl) {
+      console.error("Backend API URL is not configured");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
 
     const backendFormData = new FormData();
     backendFormData.append("file", file, file.name);

@@ -6,12 +6,14 @@ import type { AuthObject } from "@clerk/nextjs/server";
 // This example protects all routes including api/trpc routes
 // Please edit this to allow other routes to be public as needed.
 export default authMiddleware({
-  publicRoutes: ["/", "/sign-in", "/sign-up"],
+  publicRoutes: ["/", "/sign-in[[...sign-in]]", "/sign-up[[...sign-up]]"],
   afterAuth(auth, req) {
     // Redirect signed-in users away from auth pages
     if (
       auth.userId &&
-      ["/sign-in", "/sign-up"].includes(new URL(req.url).pathname)
+      ["/sign-in[[...sign-in]]", "/sign-up[[...sign-up]]"].includes(
+        new URL(req.url).pathname
+      )
     ) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
