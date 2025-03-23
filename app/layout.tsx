@@ -11,6 +11,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +26,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "rzn.AI - Deep Learning through Reasoning",
+  title: "ryznAI - Deep Learning through Reasoning",
   description: "Analyze files and web pages with AI assistance",
   generator: "v0.dev",
 };
@@ -35,6 +36,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  <Analytics />;
   return (
     <ClerkProvider>
       <html
