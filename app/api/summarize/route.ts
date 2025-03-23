@@ -59,8 +59,8 @@ export async function POST(request: Request) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 300000); // Increased timeout to 5 min. Can improve speed on backend.
 
-      console.log("Making request to:", `${BACKEND_URL}/api/summarize`);
-      const response = await fetch(`${BACKEND_URL}/api/summarize`, {
+      console.log("Making request to:", `${BACKEND_URL}`);
+      const response = await fetch(`${BACKEND_URL}`, {
         method: "POST",
         headers,
         body: requestBody,
