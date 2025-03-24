@@ -29,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useUser } from "@clerk/nextjs";
+import { v4 as uuidv4 } from "uuid";
 
 interface Message {
   id: string;
@@ -46,8 +46,10 @@ interface Conversation {
   messages: Message[];
 }
 
+// For demo purposes. In production use authentication
+const MOCK_USER_ID = "user_" + uuidv4().substring(0, 8);
+
 export default function ChatPage() {
-  const { user, isLoaded } = useUser();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<string | null>(
     null
@@ -64,33 +66,20 @@ export default function ChatPage() {
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [newTopicInput, setNewTopicInput] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("beginner");
-  const [messageIdCounter, setMessageIdCounter] = useState(1);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<
     string | null
   >(null);
 
-  // Generate a unique message ID
-  const generateMessageId = () => {
-    const timestamp = Date.now();
-    const id = `msg_${timestamp}_${messageIdCounter}`;
-    setMessageIdCounter(prev => prev + 1);
-    return id;
-  };
-
   // Fetch user conversations on initial load
   useEffect(() => {
-    if (isLoaded && user) {
-      fetchUserConversations();
-    }
-  }, [isLoaded, user]);
+    fetchUserConversations();
+  }, []);
 
   const fetchUserConversations = async () => {
-    if (!isLoaded || !user) return;
-
     try {
-      const response = await fetch(`/api/chat?user_id=${user.id}`);
+      const response = await fetch(`/api/chat?user_id=${MOCK_USER_ID}`);
       if (!response.ok) {
         throw new Error("Failed to fetch conversations");
       }
@@ -128,7 +117,7 @@ export default function ChatPage() {
       // For now, we'll just initialize with a welcome message
       setMessages([
         {
-          id: generateMessageId(),
+          id: uuidv4(),
           content:
             "Hi! I'm Ryzn, your AI learning assistant. I can help you understand complex concepts, solve problems, and generate code examples. What would you like to learn today?",
           role: "assistant",
@@ -158,7 +147,7 @@ export default function ChatPage() {
   };
 
   const handleCreateConversation = async () => {
-    if (!newTopicInput.trim() || !isLoaded || !user) return;
+    if (!newTopicInput.trim()) return;
 
     try {
       setIsLoading(true);
@@ -171,7 +160,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           topic: newTopicInput,
           difficulty_level: difficultyLevel,
-          user_id: user.id,
+          user_id: MOCK_USER_ID,
         }),
       });
 
@@ -201,7 +190,7 @@ export default function ChatPage() {
       // Load initial messages for this conversation
       setMessages([
         {
-          id: generateMessageId(),
+          id: uuidv4(),
           content: `Hi! I'm your Feynman Learning Assistant for ${newTopicInput}. What would you like to learn about this topic?`,
           role: "assistant",
           timestamp: new Date(),
@@ -221,7 +210,7 @@ export default function ChatPage() {
   };
 
   const confirmDelete = async () => {
-    if (!conversationToDelete || !isLoaded || !user) return;
+    if (!conversationToDelete) return;
 
     try {
       const response = await fetch("/api/chat", {
@@ -231,7 +220,7 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           conversation_id: conversationToDelete,
-          user_id: user.id,
+          user_id: MOCK_USER_ID,
         }),
       });
 
@@ -311,11 +300,11 @@ export default function ChatPage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || !activeConversation || !isLoaded || !user) return;
+    if (!inputValue.trim() || !activeConversation) return;
 
     // Add user message to UI immediately
     const userMessage: Message = {
-      id: generateMessageId(),
+      id: uuidv4(),
       content: inputValue,
       role: "user",
       timestamp: new Date(),
@@ -340,7 +329,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           message: userMessage.content,
           conversation_id: activeConversation,
-          user_id: user.id,
+          user_id: MOCK_USER_ID,
         }),
       });
 
@@ -352,7 +341,7 @@ export default function ChatPage() {
 
       // Add assistant response to messages
       const botResponse: Message = {
-        id: generateMessageId(),
+        id: uuidv4(),
         content: data.response,
         role: "assistant",
         timestamp: new Date(),
@@ -365,7 +354,7 @@ export default function ChatPage() {
       setMessages((prev) => [
         ...prev,
         {
-          id: generateMessageId(),
+          id: uuidv4(),
           content:
             "Sorry, there was an error processing your message. Please try again.",
           role: "assistant",
@@ -539,116 +528,91 @@ export default function ChatPage() {
             </Button>
           </div>
 
-          {/* Authentication check - show login prompt if not authenticated */}
-          {!isLoaded || !user ? (
+          {/* No active conversation message */}
+          {!activeConversation && !isCreatingConversation && (
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center p-6">
                 <h2 className="text-xl font-bold mb-2">Welcome to Ryzn Chat</h2>
                 <p className="text-gray-500 mb-4">
-                  Please sign in to start your learning sessions.
+                  Select a conversation or create a new one to get started.
                 </p>
-                <Link href="/sign-in">
-                  <Button>Sign In</Button>
-                </Link>
+                <Button onClick={createNewConversation}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Conversation
+                </Button>
               </div>
             </div>
-          ) : (
-            <>
-              {/* No active conversation message */}
-              {!activeConversation && !isCreatingConversation && (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <h2 className="text-xl font-bold mb-2">
-                      Welcome to Ryzn Chat
-                    </h2>
-                    <p className="text-gray-500 mb-4">
-                      Select a conversation or create a new one to get started.
-                    </p>
-                    <Button onClick={createNewConversation}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Conversation
-                    </Button>
-                  </div>
-                </div>
-              )}
+          )}
 
-              {/* Messages Area */}
-              {activeConversation && (
-                <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-800">
-                  <div className="max-w-3xl mx-auto space-y-4">
-                    {messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${
-                          message.role === "user"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
+          {/* Messages Area */}
+          {activeConversation && (
+            <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-800">
+              <div className="max-w-3xl mx-auto space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${
+                      message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                        message.role === "user"
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-200 dark:bg-gray-700">
+                      <div className="flex space-x-2">
+                        <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"></div>
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                            message.role === "user"
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                        </div>
+                          className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
+                          style={{ animationDelay: "0.4s" }}
+                        ></div>
                       </div>
-                    ))}
-                    {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-200 dark:bg-gray-700">
-                          <div className="flex space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
-                              style={{ animationDelay: "0.4s" }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div ref={messagesEndRef} />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+          )}
 
-              {/* Voice Chat Component */}
-              {activeConversation && (
-                <div className="border-t dark:border-gray-700 p-6 flex justify-center items-center bg-white dark:bg-gray-800">
-                  <div className="relative">
-                    {/* Animated rings */}
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/20 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{ animationDuration: "2s" }}
-                    ></div>
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/30 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{
-                        animationDuration: "2.5s",
-                        animationDelay: "0.2s",
-                      }}
-                    ></div>
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/10 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{
-                        animationDuration: "3s",
-                        animationDelay: "0.4s",
-                      }}
-                    ></div>
+          {/* Voice Chat Component */}
+          {activeConversation && (
+            <div className="border-t dark:border-gray-700 p-6 flex justify-center items-center bg-white dark:bg-gray-800">
+              <div className="relative">
+                {/* Animated rings */}
+                <div
+                  className={`absolute inset-0 rounded-full bg-blue-500/20 animate-ping ${
+                    isRecording ? "opacity-100" : "opacity-0"
+                  } transition-opacity duration-300`}
+                  style={{ animationDuration: "2s" }}
+                ></div>
+                <div
+                  className={`absolute inset-0 rounded-full bg-blue-500/30 animate-ping ${
+                    isRecording ? "opacity-100" : "opacity-0"
+                  } transition-opacity duration-300`}
+                  style={{ animationDuration: "2.5s", animationDelay: "0.2s" }}
+                ></div>
+                <div
+                  className={`absolute inset-0 rounded-full bg-blue-500/10 animate-ping ${
+                    isRecording ? "opacity-100" : "opacity-0"
+                  } transition-opacity duration-300`}
+                  style={{ animationDuration: "3s", animationDelay: "0.4s" }}
+                ></div>
 
-                    {/* Microphone button */}
+                {/* Microphone button */}
                 <button
                   onClick={toggleRecording}
                   className={`relative z-10 h-16 w-16 rounded-full flex items-center justify-center transition-all duration-300 ${
