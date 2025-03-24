@@ -134,8 +134,3 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
-// Health check endpoint
-export async function GET(req: Request) {
-  return NextResponse.json({ status: "ok" });
-}
