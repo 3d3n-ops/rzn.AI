@@ -29,7 +29,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/nextjs";
 
 interface Message {
@@ -65,11 +64,20 @@ export default function ChatPage() {
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [newTopicInput, setNewTopicInput] = useState("");
   const [difficultyLevel, setDifficultyLevel] = useState("beginner");
+  const [messageIdCounter, setMessageIdCounter] = useState(1);
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<
     string | null
   >(null);
+
+  // Generate a unique message ID
+  const generateMessageId = () => {
+    const timestamp = Date.now();
+    const id = `msg_${timestamp}_${messageIdCounter}`;
+    setMessageIdCounter(prev => prev + 1);
+    return id;
+  };
 
   // Fetch user conversations on initial load
   useEffect(() => {
@@ -120,7 +128,7 @@ export default function ChatPage() {
       // For now, we'll just initialize with a welcome message
       setMessages([
         {
-          id: uuidv4(),
+          id: generateMessageId(),
           content:
             "Hi! I'm Ryzn, your AI learning assistant. I can help you understand complex concepts, solve problems, and generate code examples. What would you like to learn today?",
           role: "assistant",
@@ -193,7 +201,7 @@ export default function ChatPage() {
       // Load initial messages for this conversation
       setMessages([
         {
-          id: uuidv4(),
+          id: generateMessageId(),
           content: `Hi! I'm your Feynman Learning Assistant for ${newTopicInput}. What would you like to learn about this topic?`,
           role: "assistant",
           timestamp: new Date(),
@@ -307,7 +315,7 @@ export default function ChatPage() {
 
     // Add user message to UI immediately
     const userMessage: Message = {
-      id: uuidv4(),
+      id: generateMessageId(),
       content: inputValue,
       role: "user",
       timestamp: new Date(),
@@ -344,7 +352,7 @@ export default function ChatPage() {
 
       // Add assistant response to messages
       const botResponse: Message = {
-        id: uuidv4(),
+        id: generateMessageId(),
         content: data.response,
         role: "assistant",
         timestamp: new Date(),
@@ -357,7 +365,7 @@ export default function ChatPage() {
       setMessages((prev) => [
         ...prev,
         {
-          id: uuidv4(),
+          id: generateMessageId(),
           content:
             "Sorry, there was an error processing your message. Please try again.",
           role: "assistant",
@@ -647,77 +655,4 @@ export default function ChatPage() {
                         isRecording
                           ? "bg-red-500 hover:bg-red-600 scale-110"
                           : "bg-blue-500 hover:bg-blue-600"
-                      }`}
-                    >
-                      {isRecording ? (
-                        <MicOff className="h-6 w-6 text-white" />
-                      ) : (
-                        <Mic className="h-6 w-6 text-white" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Recording status */}
-                  {isRecording && (
-                    <div className="absolute bottom-24 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
-                      <span className="h-2 w-2 rounded-full bg-red-500"></span>
-                      <span className="text-sm font-medium">
-                        Recording... {recordingTime}s
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Text Input Area - Fixed at bottom */}
-              {activeConversation && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 shadow-lg">
-                  <div className="container mx-auto max-w-3xl">
-                    <form onSubmit={handleSendMessage} className="flex gap-2">
-                      <Input
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Type your message..."
-                        className="flex-1"
-                        disabled={isLoading || isRecording}
-                      />
-                      <Button
-                        type="submit"
-                        disabled={
-                          isLoading || !inputValue.trim() || isRecording
-                        }
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </form>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Conversation</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this conversation? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-500 hover:bg-red-600 text-white"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}
+                      }`
