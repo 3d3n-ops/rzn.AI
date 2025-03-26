@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_RESPONSE;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_CHAT_RESPONSE;
 const RATE_LIMIT = 30; // requests per day
 
 // Simple in-memory cache
