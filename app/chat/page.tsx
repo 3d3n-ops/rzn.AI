@@ -29,11 +29,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { v4 as uuidv4 } from "uuid";
-import { useUser } from "@clerk/nextjs";
 
 interface Message {
-  id: string;
+  id: number;
   content: string;
   role: "user" | "assistant";
   timestamp: Date;
@@ -48,11 +46,46 @@ interface Conversation {
 }
 
 export default function ChatPage() {
-  const { user, isLoaded } = useUser();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [activeConversation, setActiveConversation] = useState<string | null>(
-    null
-  );
+  // Sample conversation history
+  const [conversations, setConversations] = useState<Conversation[]>([
+    {
+      id: "1",
+      title: "Calculus Help",
+      preview: "How do I find the derivative of a quadratic equation?",
+      date: new Date(2023, 2, 15),
+      messages: [
+        {
+          id: 1,
+          content:
+            "Hi! I'm Ryzn, your AI learning assistant. How can I help you today?",
+          role: "assistant",
+          timestamp: new Date(2023, 2, 15, 10, 0),
+        },
+        {
+          id: 2,
+          content: "How do I find the derivative of a quadratic equation?",
+          role: "user",
+          timestamp: new Date(2023, 2, 15, 10, 1),
+        },
+      ],
+    },
+    {
+      id: "2",
+      title: "Physics Concepts",
+      preview: "Can you explain Newton's laws of motion?",
+      date: new Date(2023, 2, 14),
+      messages: [],
+    },
+    {
+      id: "3",
+      title: "Chemistry Help",
+      preview: "How do chemical bonds work?",
+      date: new Date(2023, 2, 13),
+      messages: [],
+    },
+  ]);
+
+  const [activeConversation, setActiveConversation] = useState<string>("1");
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,148 +95,55 @@ export default function ChatPage() {
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
-  const [newTopicInput, setNewTopicInput] = useState("");
-  const [difficultyLevel, setDifficultyLevel] = useState("beginner");
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<
     string | null
   >(null);
 
-  // Fetch user conversations on initial load
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchUserConversations();
-    }
-  }, [isLoaded, user]);
-
-  const fetchUserConversations = async () => {
-    if (!isLoaded || !user) return;
-
-    try {
-      const response = await fetch(`/api/chat?user_id=${user.id}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch conversations");
-      }
-
-      const data = await response.json();
-
-      if (data.conversations) {
-        // Transform the conversation data into our local format
-        const formattedConversations: Conversation[] = Object.entries(
-          data.conversations
-        ).map(([id, conv]: [string, any]) => ({
-          id,
-          title: conv.topic || "New Conversation",
-          preview: "", // We'll need to get this from the messages if available
-          date: new Date(),
-          messages: [], // We'll load messages when selecting a conversation
-        }));
-
-        setConversations(formattedConversations);
-
-        // If there are conversations, set the first one as active
-        if (formattedConversations.length > 0) {
-          setActiveConversation(formattedConversations[0].id);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    }
-  };
-
   // Load messages for active conversation
   useEffect(() => {
-    if (activeConversation) {
-      // In a production app, you would fetch messages for this conversation
-      // For now, we'll just initialize with a welcome message
-      setMessages([
-        {
-          id: uuidv4(),
-          content:
-            "Hi! I'm Ryzn, your AI learning assistant. I can help you understand complex concepts, solve problems, and generate code examples. What would you like to learn today?",
-          role: "assistant",
-          timestamp: new Date(),
-        },
-      ]);
-    }
-  }, [activeConversation]);
-
-  // Scroll to bottom of messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  // Clean up recording timer when component unmounts
-  useEffect(() => {
-    return () => {
-      if (recordingTimerRef.current) {
-        clearInterval(recordingTimerRef.current);
+    const conversation = conversations.find((c) => c.id === activeConversation);
+    if (conversation) {
+      if (conversation.messages.length > 0) {
+        setMessages(conversation.messages);
+      } else {
+        // Initialize with a welcome message if conversation is empty
+        setMessages([
+          {
+            id: 1,
+            content:
+              "Hi! I'm Ryzn, your AI learning assistant. I can help you understand complex concepts, solve problems, and generate code examples. What would you like to learn today?",
+            role: "assistant",
+            timestamp: new Date(),
+          },
+        ]);
       }
-    };
-  }, []);
+    }
+  }, [activeConversation, conversations]);
 
   // Create a new conversation
-  const createNewConversation = async () => {
-    setIsCreatingConversation(true);
-  };
+  const createNewConversation = () => {
+    const newId = (conversations.length + 1).toString();
+    const newConversation: Conversation = {
+      id: newId,
+      title: "New Conversation",
+      preview: "",
+      date: new Date(),
+      messages: [],
+    };
 
-  const handleCreateConversation = async () => {
-    if (!newTopicInput.trim() || !isLoaded || !user) return;
-
-    try {
-      setIsLoading(true);
-
-      const response = await fetch("/api/chat", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topic: newTopicInput,
-          difficulty_level: difficultyLevel,
-          user_id: user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create conversation");
-      }
-
-      const data = await response.json();
-
-      // Add the new conversation to our list
-      const newConversation: Conversation = {
-        id: data.conversation_id,
-        title: newTopicInput,
-        preview: "",
-        date: new Date(),
-        messages: [],
-      };
-
-      setConversations((prev) => [newConversation, ...prev]);
-      setActiveConversation(newConversation.id);
-
-      // Reset form
-      setNewTopicInput("");
-      setDifficultyLevel("beginner");
-      setIsCreatingConversation(false);
-
-      // Load initial messages for this conversation
-      setMessages([
-        {
-          id: uuidv4(),
-          content: `Hi! I'm your Feynman Learning Assistant for ${newTopicInput}. What would you like to learn about this topic?`,
-          role: "assistant",
-          timestamp: new Date(),
-        },
-      ]);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    setConversations([newConversation, ...conversations]);
+    setActiveConversation(newId);
+    setMessages([
+      {
+        id: 1,
+        content:
+          "Hi! I'm Ryzn, your AI learning assistant. I can help you understand complex concepts, solve problems, and generate code examples. What would you like to learn today?",
+        role: "assistant",
+        timestamp: new Date(),
+      },
+    ]);
   };
 
   const handleDeleteConversation = (id: string, e: React.MouseEvent) => {
@@ -212,48 +152,30 @@ export default function ChatPage() {
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (!conversationToDelete || !isLoaded || !user) return;
+  const confirmDelete = () => {
+    if (!conversationToDelete) return;
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          conversation_id: conversationToDelete,
-          user_id: user.id,
-        }),
-      });
+    // Remove the conversation
+    setConversations((prevConversations) =>
+      prevConversations.filter((conv) => conv.id !== conversationToDelete)
+    );
 
-      if (!response.ok) {
-        throw new Error("Failed to delete conversation");
-      }
-
-      // Remove the conversation locally
-      setConversations((prevConversations) =>
-        prevConversations.filter((conv) => conv.id !== conversationToDelete)
+    // If the deleted conversation was active, switch to another one
+    if (activeConversation === conversationToDelete) {
+      const remainingConversations = conversations.filter(
+        (conv) => conv.id !== conversationToDelete
       );
 
-      // If the deleted conversation was active, switch to another one
-      if (activeConversation === conversationToDelete) {
-        const remainingConversations = conversations.filter(
-          (conv) => conv.id !== conversationToDelete
-        );
-
-        if (remainingConversations.length > 0) {
-          setActiveConversation(remainingConversations[0].id);
-        } else {
-          setActiveConversation(null);
-        }
+      if (remainingConversations.length > 0) {
+        setActiveConversation(remainingConversations[0].id);
+      } else {
+        // If no conversations left, create a new one
+        createNewConversation();
       }
-    } catch (error) {
-      console.error("Error deleting conversation:", error);
-    } finally {
-      setDeleteDialogOpen(false);
-      setConversationToDelete(null);
     }
+
+    setDeleteDialogOpen(false);
+    setConversationToDelete(null);
   };
 
   const toggleRecording = () => {
@@ -263,11 +185,36 @@ export default function ChatPage() {
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
       }
+
+      // Simulate processing the voice input
+      setIsLoading(true);
+
+      // Add a user message with the "voice recording"
+      const userMessage: Message = {
+        id: messages.length + 1,
+        content: "How do I find the derivative of a quadratic equation?",
+        role: "user",
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
       setRecordingTime(0);
 
-      // TODO: In production, implement actual speech recognition
-      // For now, we'll just show a placeholder message
-      alert("Speech recognition would be implemented here");
+      // Update conversation preview
+      updateConversationPreview(activeConversation, userMessage.content);
+
+      // Simulate AI response
+      setTimeout(() => {
+        const botResponse: Message = {
+          id: messages.length + 2,
+          content:
+            "To find the derivative of a quadratic equation in the form ax² + bx + c, you apply the power rule to each term. The derivative will be 2ax + b. The constant term c disappears because the derivative of a constant is zero.",
+          role: "assistant",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, botResponse]);
+        setIsLoading(false);
+      }, 1500);
     } else {
       // Start recording
       setIsRecording(true);
@@ -301,13 +248,27 @@ export default function ChatPage() {
     );
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputValue.trim() || !activeConversation || !isLoaded || !user) return;
+  // Clean up the interval when component unmounts
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+    };
+  }, []);
 
-    // Add user message to UI immediately
+  // Scroll to bottom of messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    // Add user message
     const userMessage: Message = {
-      id: uuidv4(),
+      id: messages.length + 1,
       content: inputValue,
       role: "user",
       timestamp: new Date(),
@@ -318,55 +279,21 @@ export default function ChatPage() {
     // Update conversation preview
     updateConversationPreview(activeConversation, inputValue);
 
-    // Clear input and show loading
     setInputValue("");
     setIsLoading(true);
 
-    try {
-      // Send message to backend
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userMessage.content,
-          conversation_id: activeConversation,
-          user_id: user.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send message");
-      }
-
-      const data = await response.json();
-
-      // Add assistant response to messages
+    // Simulate AI response
+    setTimeout(() => {
       const botResponse: Message = {
-        id: uuidv4(),
-        content: data.response,
+        id: messages.length + 2,
+        content:
+          "I'll help you understand that concept. Let me break it down step by step so it's easier to follow.",
         role: "assistant",
         timestamp: new Date(),
       };
-
       setMessages((prev) => [...prev, botResponse]);
-    } catch (error) {
-      console.error("Error sending message:", error);
-      // Add error message
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: uuidv4(),
-          content:
-            "Sorry, there was an error processing your message. Please try again.",
-          role: "assistant",
-          timestamp: new Date(),
-        },
-      ]);
-    } finally {
       setIsLoading(false);
-    }
+    }, 1500);
   };
 
   // Filter conversations based on search query
@@ -431,90 +358,44 @@ export default function ChatPage() {
             </div>
           </div>
 
-          {/* New conversation form */}
-          {isCreatingConversation && (
-            <div className="p-4 border-b dark:border-gray-700">
-              <h3 className="font-medium mb-2">Create new learning session</h3>
-              <Input
-                placeholder="What topic are you learning about?"
-                className="mb-2"
-                value={newTopicInput}
-                onChange={(e) => setNewTopicInput(e.target.value)}
-              />
-              <select
-                className="w-full p-2 mb-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-                value={difficultyLevel}
-                onChange={(e) => setDifficultyLevel(e.target.value)}
-              >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </select>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsCreatingConversation(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleCreateConversation}
-                  disabled={!newTopicInput.trim() || isLoading}
-                >
-                  Create
-                </Button>
-              </div>
-            </div>
-          )}
-
           {/* Conversation List */}
           <div className="flex-1 overflow-y-auto">
-            {filteredConversations.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                No conversations yet. Create a new one to get started!
-              </div>
-            ) : (
-              filteredConversations.map((conversation) => (
-                <div key={conversation.id} className="relative group">
-                  <button
-                    className={`w-full text-left p-4 border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                      activeConversation === conversation.id
-                        ? "bg-gray-100 dark:bg-gray-700"
-                        : ""
-                    }`}
-                    onClick={() => setActiveConversation(conversation.id)}
-                  >
-                    <div className="flex items-start gap-3">
-                      <MessageSquare className="h-5 w-5 text-gray-500 dark:text-gray-400 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center mb-1">
-                          <h3 className="font-medium truncate">
-                            {conversation.title}
-                          </h3>
-                          <span className="text-xs text-gray-500">
-                            {format(conversation.date, "MMM d")}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                          {conversation.preview || "New conversation"}
-                        </p>
+            {filteredConversations.map((conversation) => (
+              <div key={conversation.id} className="relative group">
+                <button
+                  className={`w-full text-left p-4 border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                    activeConversation === conversation.id
+                      ? "bg-gray-100 dark:bg-gray-700"
+                      : ""
+                  }`}
+                  onClick={() => setActiveConversation(conversation.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <MessageSquare className="h-5 w-5 text-gray-500 dark:text-gray-400 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-center mb-1">
+                        <h3 className="font-medium truncate">
+                          {conversation.title}
+                        </h3>
+                        <span className="text-xs text-gray-500">
+                          {format(conversation.date, "MMM d")}
+                        </span>
                       </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {conversation.preview || "New conversation"}
+                      </p>
                     </div>
-                  </button>
-                  <button
-                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
-                    onClick={(e) =>
-                      handleDeleteConversation(conversation.id, e)
-                    }
-                    aria-label="Delete conversation"
-                  >
-                    <Trash2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                  </button>
-                </div>
-              ))
-            )}
+                  </div>
+                </button>
+                <button
+                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600"
+                  onClick={(e) => handleDeleteConversation(conversation.id, e)}
+                  aria-label="Delete conversation"
+                >
+                  <Trash2 className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -531,171 +412,120 @@ export default function ChatPage() {
             </Button>
           </div>
 
-          {/* Authentication check - show login prompt if not authenticated */}
-          {!isLoaded || !user ? (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center p-6">
-                <h2 className="text-xl font-bold mb-2">Welcome to Ryzn Chat</h2>
-                <p className="text-gray-500 mb-4">
-                  Please sign in to start your learning sessions.
-                </p>
-                <Link href="/sign-in">
-                  <Button>Sign In</Button>
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* No active conversation message */}
-              {!activeConversation && !isCreatingConversation && (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-center p-6">
-                    <h2 className="text-xl font-bold mb-2">
-                      Welcome to Ryzn Chat
-                    </h2>
-                    <p className="text-gray-500 mb-4">
-                      Select a conversation or create a new one to get started.
-                    </p>
-                    <Button onClick={createNewConversation}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      New Conversation
-                    </Button>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-800">
+            <div className="max-w-3xl mx-auto space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${
+                    message.role === "user" ? "justify-end" : "justify-start"
+                  }`}
+                >
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      message.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    }`}
+                  >
+                    <p className="text-sm">{message.content}</p>
                   </div>
                 </div>
-              )}
-
-              {/* Messages Area */}
-              {activeConversation && (
-                <div className="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-800">
-                  <div className="max-w-3xl mx-auto space-y-4">
-                    {messages.map((message) => (
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-200 dark:bg-gray-700">
+                    <div className="flex space-x-2">
+                      <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"></div>
                       <div
-                        key={message.id}
-                        className={`flex ${
-                          message.role === "user"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
-                        <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                            message.role === "user"
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                        </div>
-                      </div>
-                    ))}
-                    {isLoading && (
-                      <div className="flex justify-start">
-                        <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-gray-200 dark:bg-gray-700">
-                          <div className="flex space-x-2">
-                            <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
-                              style={{ animationDelay: "0.2s" }}
-                            ></div>
-                            <div
-                              className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
-                              style={{ animationDelay: "0.4s" }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    <div ref={messagesEndRef} />
-                  </div>
-                </div>
-              )}
-
-              {/* Voice Chat Component */}
-              {activeConversation && (
-                <div className="border-t dark:border-gray-700 p-6 flex justify-center items-center bg-white dark:bg-gray-800">
-                  <div className="relative">
-                    {/* Animated rings */}
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/20 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{ animationDuration: "2s" }}
-                    ></div>
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/30 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{
-                        animationDuration: "2.5s",
-                        animationDelay: "0.2s",
-                      }}
-                    ></div>
-                    <div
-                      className={`absolute inset-0 rounded-full bg-blue-500/10 animate-ping ${
-                        isRecording ? "opacity-100" : "opacity-0"
-                      } transition-opacity duration-300`}
-                      style={{
-                        animationDuration: "3s",
-                        animationDelay: "0.4s",
-                      }}
-                    ></div>
-
-                    {/* Microphone button */}
-                    <button
-                      onClick={toggleRecording}
-                      className={`relative z-10 h-16 w-16 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        isRecording
-                          ? "bg-red-500 hover:bg-red-600 scale-110"
-                          : "bg-blue-500 hover:bg-blue-600"
-                      }`}
-                    >
-                      {isRecording ? (
-                        <MicOff className="h-6 w-6 text-white" />
-                      ) : (
-                        <Mic className="h-6 w-6 text-white" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Recording status */}
-                  {isRecording && (
-                    <div className="absolute bottom-24 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
-                      <span className="h-2 w-2 rounded-full bg-red-500"></span>
-                      <span className="text-sm font-medium">
-                        Recording... {recordingTime}s
-                      </span>
+                        className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce"
+                        style={{ animationDelay: "0.4s" }}
+                      ></div>
                     </div>
-                  )}
-                </div>
-              )}
-
-              {/* Text Input Area - Fixed at bottom */}
-              {activeConversation && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 shadow-lg">
-                  <div className="container mx-auto max-w-3xl">
-                    <form onSubmit={handleSendMessage} className="flex gap-2">
-                      <Input
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Type your message..."
-                        className="flex-1"
-                        disabled={isLoading || isRecording}
-                      />
-                      <Button
-                        type="submit"
-                        disabled={
-                          isLoading || !inputValue.trim() || isRecording
-                        }
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </form>
                   </div>
                 </div>
               )}
-            </>
-          )}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* Voice Chat Component */}
+          <div className="border-t dark:border-gray-700 p-6 flex justify-center items-center bg-white dark:bg-gray-800">
+            <div className="relative">
+              {/* Animated rings */}
+              <div
+                className={`absolute inset-0 rounded-full bg-blue-500/20 animate-ping ${
+                  isRecording ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-300`}
+                style={{ animationDuration: "2s" }}
+              ></div>
+              <div
+                className={`absolute inset-0 rounded-full bg-blue-500/30 animate-ping ${
+                  isRecording ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-300`}
+                style={{ animationDuration: "2.5s", animationDelay: "0.2s" }}
+              ></div>
+              <div
+                className={`absolute inset-0 rounded-full bg-blue-500/10 animate-ping ${
+                  isRecording ? "opacity-100" : "opacity-0"
+                } transition-opacity duration-300`}
+                style={{ animationDuration: "3s", animationDelay: "0.4s" }}
+              ></div>
+
+              {/* Microphone button */}
+              <button
+                onClick={toggleRecording}
+                className={`relative z-10 h-16 w-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isRecording
+                    ? "bg-red-500 hover:bg-red-600 scale-110"
+                    : "bg-blue-500 hover:bg-blue-600"
+                }`}
+              >
+                {isRecording ? (
+                  <MicOff className="h-6 w-6 text-white" />
+                ) : (
+                  <Mic className="h-6 w-6 text-white" />
+                )}
+              </button>
+            </div>
+
+            {/* Recording status */}
+            {isRecording && (
+              <div className="absolute bottom-24 bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+                <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                <span className="text-sm font-medium">
+                  Recording... {recordingTime}s
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Text Input Area - Fixed at bottom */}
+          <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 shadow-lg">
+            <div className="container mx-auto max-w-3xl">
+              <form onSubmit={handleSendMessage} className="flex gap-2">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1"
+                  disabled={isLoading || isRecording}
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading || !inputValue.trim() || isRecording}
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
