@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Header } from "../components/Header";
 
+// Dashboard component for the main learning interface
 export default function Dashboard() {
   const router = useRouter();
   const [userName, setUserName] = useState("Eden");
