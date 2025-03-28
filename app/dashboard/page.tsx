@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Brain, BookOpen, Calculator, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import {
+  Brain,
+  BookOpen,
+  Calculator,
+  ChevronRight,
+  User,
+  LineChart,
+  PenTool,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,16 +21,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Header } from "../components/Header";
+import { ModelSelector } from "@/components/model-selector";
+import { ThemeToggle } from "@/components/theme-switcher";
 
-// Dashboard component for the main learning interface
 export default function Dashboard() {
   const router = useRouter();
   const [userName, setUserName] = useState("Eden");
 
   const handleTakeNotes = () => {
-    // Navigate to notes
-    router.push("/notes");
+    // Refresh the current view
+    window.location.reload();
   };
 
   const handleDeepLearn = () => {
@@ -29,9 +38,64 @@ export default function Dashboard() {
     router.push("/chat");
   };
 
+  const handleMathVisuals = () => {
+    // Navigate to math visuals with a proper state reset
+    router.push("/math-visuals");
+  };
+
+  const handleDesmos = () => {
+    router.push("/desmos");
+  };
+
+  const handleExcalidraw = () => {
+    router.push("/excalidraw");
+  };
+
   return (
-    <div className="min-h-screen relative">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
+      {/* Net Background Pattern with Blur */}
+      <div className="absolute inset-0 z-0">
+        {/* Blurred overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-gray-100/80 dark:from-gray-900/80 dark:to-gray-800/80 backdrop-blur-[8px]"></div>
+
+        {/* Net pattern with reduced opacity */}
+        <div className="absolute inset-0 z-0 opacity-5">
+          <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <pattern
+              id="net-pattern"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M0 20 L40 20 M20 0 L20 40"
+                stroke="currentColor"
+                strokeWidth="0.5"
+              />
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#net-pattern)" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Header */}
+      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md dark:bg-gray-900/80 border-b dark:border-gray-800 z-50">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="text-xl font-semibold">
+            <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
+              rzn.AI
+            </span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <ModelSelector />
+            <ThemeToggle />
+            <Button variant="outline" size="sm" className="gap-2">
+              <User size={16} />
+              <span>{userName}</span>
+            </Button>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-32 pb-16 relative z-10">
@@ -113,7 +177,10 @@ export default function Dashboard() {
             </Card>
 
             {/* Learn Math Card */}
-            <Card className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden">
+            <Card
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
+              onClick={handleMathVisuals}
+            >
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
 
               <CardHeader className="pb-2">
@@ -136,6 +203,68 @@ export default function Dashboard() {
               <CardFooter className="flex justify-between items-center">
                 <span className="text-sm text-green-600 dark:text-green-400">
                   Solve problems
+                </span>
+                <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
+              </CardFooter>
+            </Card>
+
+            {/* Desmos Card */}
+            <Card
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
+              onClick={handleDesmos}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-300"></div>
+
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <LineChart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  Desmos Graphing
+                </CardTitle>
+                <CardDescription>
+                  Interactive function graphing and exploration
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Visualize mathematical functions and equations with our
+                  interactive Desmos graphing calculator.
+                </p>
+              </CardContent>
+
+              <CardFooter className="flex justify-between items-center">
+                <span className="text-sm text-blue-600 dark:text-blue-400">
+                  Graph equations
+                </span>
+                <ChevronRight className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
+              </CardFooter>
+            </Card>
+
+            {/* Excalidraw Card */}
+            <Card
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
+              onClick={handleExcalidraw}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
+
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <PenTool className="h-6 w-6 text-green-600 dark:text-green-400" />
+                  Excalidraw Sketching
+                </CardTitle>
+                <CardDescription>Visual math concept sketching</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Create diagrams, sketches, and visual explanations for
+                  mathematical concepts with our drawing tools.
+                </p>
+              </CardContent>
+
+              <CardFooter className="flex justify-between items-center">
+                <span className="text-sm text-green-600 dark:text-green-400">
+                  Start drawing
                 </span>
                 <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
               </CardFooter>
