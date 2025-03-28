@@ -264,7 +264,7 @@ export default function Dashboard() {
 
               <CardFooter className="flex justify-between items-center">
                 <span className="text-sm text-green-600 dark:text-green-400">
-                  Start drawing
+                  Start drawing today!
                 </span>
                 <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
               </CardFooter>
