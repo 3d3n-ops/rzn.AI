@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { getResponse } from "../actions/response";
 
 type Message = {
   id: string;
@@ -50,21 +51,7 @@ export function ChatInterface() {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/response`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: newMessage.content,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to get response");
-      }
-
-      const data = await response.json();
+      const data = await getResponse("", newMessage.content);
 
       // Simulate typing effect
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -95,28 +82,23 @@ export function ChatInterface() {
   };
 
   const handleVoiceMessage = async (audioBlob: Blob) => {
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "voice-message.wav");
-
     try {
-      const response = await fetch(`${API_URL}/api/response`, {
-        method: "POST",
-        body: formData,
-      });
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      
+      reader.onload = async () => {
+        const base64Audio = reader.result as string;
+        const data = await getResponse(base64Audio, "Process this voice message");
+        
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: data.response,
+          role: "assistant",
+          timestamp: new Date(),
+        };
 
-      if (!response.ok) {
-        throw new Error("Failed to process voice message");
-      }
-
-      const data = await response.json();
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: data.response,
-        role: "assistant",
-        timestamp: new Date(),
+        setMessages((prev) => [...prev, assistantMessage]);
       };
-
-      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error processing voice message:", error);
       const errorMessage: Message = {

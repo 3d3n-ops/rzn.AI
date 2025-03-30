@@ -22,9 +22,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { AudioRecorder } from "../components/audio-recorder";
+import { summarizeContent } from "../actions/summarize";
+import { getResponse } from "../actions/response";
 
-type StudyFormatType = "notes" | "summary" | "audio" | "quiz";
-type OutputType = "notes" | "text" | "tts_audio" | "quiz";
+type StudyFormatType = "notes" | "summary" | "audio" | "quiz" | "record";
+type OutputType = StudyFormatType;
 
 type QuizQuestion = {
   id: string;
@@ -53,6 +56,7 @@ const studyFormats = [
   { id: "summary", label: "Summary", icon: List },
   { id: "audio", label: "Audio Reading", icon: Mic },
   { id: "quiz", label: "Quiz", icon: BookOpen },
+  { id: "record", label: "Record Lecture", icon: Mic },
 ];
 
 type CodeProps = {
@@ -95,26 +99,12 @@ export default function Notes() {
 
     try {
       console.log("Selected output type:", outputType);
-      const formData = new FormData();
-      if (file) {
-        formData.append("file", file);
-      }
-      formData.append("output_type", outputType);
-
-      console.log("Sending request to /api/summarize");
-      const response = await fetch("/api/summarize", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ error: "Failed to generate responses" }));
-        throw new Error(errorData.error || "Failed to generate responses");
+      
+      if (!file) {
+        throw new Error("No file selected");
       }
 
-      const data = await response.json();
+      const data = await summarizeContent(file, outputType);
       console.log("Response data:", data);
 
       // For all output types, set the response data
@@ -139,6 +129,12 @@ export default function Notes() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleRecordLecture = () => {
+    setOutputType("record");
+    setResponse({}); // Clear any previous responses
+    setFile(null); // Clear any uploaded file
   };
 
   const handleSaveToFile = async () => {
@@ -417,6 +413,28 @@ export default function Notes() {
     console.log("Rendering content for type:", outputType);
     console.log("Current response:", response);
 
+    if (outputType === "record") {
+      return <AudioRecorder />;
+    }
+
+    // Only show the empty state message for non-record modes
+    if (Object.keys(response).length === 0) {
+      return (
+        <motion.div
+          key="empty"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="text-center py-12"
+        >
+          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-gray-400">
+            Upload a file and select a study format to begin
+          </p>
+        </motion.div>
+      );
+    }
+
     const getContent = () => {
       switch (outputType) {
         case "summary":
@@ -565,50 +583,55 @@ export default function Notes() {
               {/* File Upload Section */}
               <Card className="p-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="file-upload"
-                      className="cursor-pointer block"
-                    >
-                      <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                        <Upload className="h-5 w-5" />
-                        <span className="text-sm">Upload study material</span>
+                  {/* Only show file upload section if not in record mode */}
+                  {outputType !== "record" && (
+                    <>
+                      <div>
+                        <label
+                          htmlFor="file-upload"
+                          className="cursor-pointer block"
+                        >
+                          <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+                            <Upload className="h-5 w-5" />
+                            <span className="text-sm">Upload study material</span>
+                          </div>
+                          <input
+                            id="file-upload"
+                            type="file"
+                            className="hidden"
+                            onChange={handleFileChange}
+                            accept=".pdf,.doc,.docx,.txt"
+                          />
+                        </label>
                       </div>
-                      <input
-                        id="file-upload"
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileChange}
-                        accept=".pdf,.doc,.docx,.txt"
-                      />
-                    </label>
-                  </div>
 
-                  {/* File Preview */}
-                  {file && (
-                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <FileText className="h-4 w-4 text-blue-500" />
-                          <div>
-                            <p className="text-sm font-medium truncate max-w-[150px]">
-                              {file.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {(file.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
+                      {/* File Preview */}
+                      {file && (
+                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-blue-500" />
+                              <div>
+                                <p className="text-sm font-medium truncate max-w-[150px]">
+                                  {file.name}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {(file.size / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setFile(null)}
+                              className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                            >
+                              Remove
+                            </Button>
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setFile(null)}
-                          className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
+                      )}
+                    </>
                   )}
 
                   {/* Study Format Selection */}
@@ -620,10 +643,14 @@ export default function Notes() {
                         return (
                           <button
                             key={format.id}
-                            type="button"
+                            type={format.id === "record" ? "button" : "submit"}
                             onClick={() => {
-                              console.log("Setting output type to:", format.id); // Debug log
-                              setOutputType(format.id as StudyFormatType);
+                              if (format.id === "record") {
+                                handleRecordLecture();
+                              } else {
+                                console.log("Setting output type to:", format.id);
+                                setOutputType(format.id as StudyFormatType);
+                              }
                             }}
                             className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm ${
                               outputType === format.id
@@ -639,20 +666,23 @@ export default function Notes() {
                     </div>
                   </div>
 
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !file}
-                    className="w-full"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                        <span>Processing...</span>
-                      </div>
-                    ) : (
-                      "Generate"
-                    )}
-                  </Button>
+                  {/* Only show Generate button if not in record mode */}
+                  {outputType !== "record" && (
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !file}
+                      className="w-full"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                          <span>Processing...</span>
+                        </div>
+                      ) : (
+                        "Generate"
+                      )}
+                    </Button>
+                  )}
                 </form>
               </Card>
             </div>
@@ -661,8 +691,11 @@ export default function Notes() {
             <div className="col-span-6">
               <Card className="flex flex-col h-[calc(100vh-12rem)] max-h-[800px]">
                 <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-                  <h3 className="font-semibold">Generated Study Material</h3>
+                  <h3 className="font-semibold">
+                    {outputType === "record" ? "Lecture Recorder" : "Generated Study Material"}
+                  </h3>
                   {outputType !== "quiz" &&
+                    outputType !== "record" &&
                     (response.summary ||
                       response.notes ||
                       response.audio_url ||
@@ -737,7 +770,7 @@ export default function Notes() {
                             : "Processing your file..."}
                         </p>
                       </motion.div>
-                    ) : Object.keys(response).length > 0 ? (
+                    ) : (
                       <motion.div
                         key="content"
                         initial={{ opacity: 0, y: 10 }}
@@ -745,54 +778,7 @@ export default function Notes() {
                         exit={{ opacity: 0, y: -10 }}
                         className="space-y-6"
                       >
-                        {isGenerating ? (
-                          <div className="flex justify-start">
-                            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 flex gap-1">
-                              <motion.span
-                                className="w-2 h-2 bg-gray-500 rounded-full"
-                                animate={{ y: [0, -6, 0] }}
-                                transition={{
-                                  duration: 0.6,
-                                  repeat: Infinity,
-                                  delay: 0,
-                                }}
-                              />
-                              <motion.span
-                                className="w-2 h-2 bg-gray-500 rounded-full"
-                                animate={{ y: [0, -6, 0] }}
-                                transition={{
-                                  duration: 0.6,
-                                  repeat: Infinity,
-                                  delay: 0.2,
-                                }}
-                              />
-                              <motion.span
-                                className="w-2 h-2 bg-gray-500 rounded-full"
-                                animate={{ y: [0, -6, 0] }}
-                                transition={{
-                                  duration: 0.6,
-                                  repeat: Infinity,
-                                  delay: 0.4,
-                                }}
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                          renderContent()
-                        )}
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="empty"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-center py-12"
-                      >
-                        <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600 dark:text-gray-400">
-                          Upload a file and select a study format to begin
-                        </p>
+                        {renderContent()}
                       </motion.div>
                     )}
                   </AnimatePresence>
