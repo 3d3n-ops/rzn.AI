@@ -11,6 +11,7 @@ import {
   User,
   LineChart,
   PenTool,
+  Mic,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,7 @@ export default function Dashboard() {
 
   const handleTakeNotes = () => {
     // Refresh the current view
-    window.location.reload();
+    router.push("/notes");
   };
 
   const handleDeepLearn = () => {
@@ -49,6 +50,10 @@ export default function Dashboard() {
 
   const handleExcalidraw = () => {
     router.push("/excalidraw");
+  };
+
+  const handleLectureRecorder = () => {
+    router.push("/lecture-recorder");
   };
 
   return (
@@ -267,6 +272,37 @@ export default function Dashboard() {
                   Start drawing today!
                 </span>
                 <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
+              </CardFooter>
+            </Card>
+
+            {/* Lecture Recorder Card */}
+            <Card
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
+              onClick={handleLectureRecorder}
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-500/20 transition-all duration-300"></div>
+
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <Mic className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                  Lecture Recorder
+                </CardTitle>
+                <CardDescription>
+                  Record and transcribe lectures
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Record your lectures and get instant transcriptions with AI-generated notes.
+                </p>
+              </CardContent>
+
+              <CardFooter className="flex justify-between items-center">
+                <span className="text-sm text-orange-600 dark:text-orange-400">
+                  Start recording
+                </span>
+                <ChevronRight className="h-5 w-5 text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform" />
               </CardFooter>
             </Card>
           </div>
