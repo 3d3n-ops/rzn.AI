@@ -1,6 +1,5 @@
 "use client";
 
-import type React from "react";
 import { useState } from "react";
 import {
   Upload,
@@ -25,8 +24,9 @@ import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { AudioRecorder } from "../components/audio-recorder";
 import { summarizeContent } from "../actions/summarize";
 import { getResponse } from "../actions/response";
+import { transcribeAudio } from "../actions/transcribe";
 
-type StudyFormatType = "notes" | "summary" | "audio" | "quiz" | "record";
+type StudyFormatType = "notes" | "summary" | "quiz" | "record";
 type OutputType = StudyFormatType;
 
 type QuizQuestion = {
@@ -46,17 +46,15 @@ type Quiz = {
 type StudyResponse = {
   summary?: string;
   notes?: string;
-  audio_url?: string;
-  tts_audio_url?: string;
   quiz?: Quiz;
+  transcript?: string;
 };
 
 const studyFormats = [
   { id: "notes", label: "Notes", icon: FileText },
   { id: "summary", label: "Summary", icon: List },
-  { id: "audio", label: "Audio Reading", icon: Mic },
   { id: "quiz", label: "Quiz", icon: BookOpen },
-  { id: "record", label: "Record Lecture", icon: Mic },
+  { id: "record", label: "Upload Audio", icon: Upload },
 ];
 
 type CodeProps = {
@@ -88,6 +86,16 @@ export default function Notes() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
+      if (outputType === "record") {
+        if (!selectedFile.type.startsWith('audio/')) {
+          setError("Please select an audio file (MP3, WAV, M4A, etc.)");
+          return;
+        }
+        if (selectedFile.size > 50 * 1024 * 1024) {
+          setError("Audio file size must be less than 50MB");
+          return;
+        }
+      }
       setFile(selectedFile);
     }
   };
@@ -99,13 +107,25 @@ export default function Notes() {
 
     try {
       console.log("Selected output type:", outputType);
+      console.log("File type:", file?.type);
+      console.log("File size:", file?.size);
       
       if (!file) {
         throw new Error("No file selected");
       }
 
-      const data = await summarizeContent(file, outputType);
-      console.log("Response data:", data);
+      let data;
+      if (outputType === "record") {
+        console.log("Starting audio transcription process...");
+        // Handle audio transcription
+        data = await transcribeAudio(file);
+        console.log("Audio transcription response:", data);
+      } else {
+        console.log("Starting content summarization process...");
+        // Handle other file types (PDF, text, etc.)
+        data = await summarizeContent(file, outputType);
+        console.log("Response data:", data);
+      }
 
       // For all output types, set the response data
       setResponse(data);
@@ -149,10 +169,15 @@ export default function Notes() {
     if (outputType === "notes" || outputType === "summary") {
       content =
         outputType === "notes" ? response.notes || "" : response.summary || "";
-    } else if (outputType === "audio") {
-      content = `Audio Summary URL: ${
-        response.audio_url || "Not available"
-      }\nFull Audio URL: ${response.tts_audio_url || "Not available"}`;
+    } else if (outputType === "record") {
+      // For audio transcription, include both transcript and notes
+      content = `# Audio Transcription Notes\n\n`;
+      if (response.transcript) {
+        content += `## Transcript\n\n${response.transcript}\n\n`;
+      }
+      if (response.notes) {
+        content += `## Generated Notes\n\n${response.notes}`;
+      }
     }
 
     if (!content) {
@@ -410,28 +435,89 @@ export default function Notes() {
   };
 
   const renderContent = () => {
-    console.log("Rendering content for type:", outputType);
+    console.log("Current outputType:", outputType);
     console.log("Current response:", response);
 
     if (outputType === "record") {
-      return <AudioRecorder />;
+      if (!response.transcript && !response.notes) {
+        return (
+          <div className="text-center text-gray-500">
+            Upload an audio file and click "Transcribe Audio" to get started
+          </div>
+        );
+      }
+
+      return (
+        <div className="space-y-6">
+          {response.transcript && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Transcript</h2>
+              <div className="prose dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  components={{
+                    h1: ({ children }) => (
+                      <h1 className="text-2xl font-bold mb-4">{children}</h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-xl font-bold mb-3">{children}</h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-lg font-bold mb-2">{children}</h3>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc pl-6 mb-4">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal pl-6 mb-4">{children}</ol>
+                    ),
+                    li: ({ children }) => <li className="mb-2">{children}</li>,
+                    p: ({ children }) => <p className="mb-4">{children}</p>,
+                  }}
+                >
+                  {response.transcript}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+          {response.notes && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">Generated Notes</h2>
+              <div className="prose dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  components={{
+                    h1: ({ children }) => (
+                      <h1 className="text-2xl font-bold mb-4">{children}</h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-xl font-bold mb-3">{children}</h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-lg font-bold mb-2">{children}</h3>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="list-disc pl-6 mb-4">{children}</ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="list-decimal pl-6 mb-4">{children}</ol>
+                    ),
+                    li: ({ children }) => <li className="mb-2">{children}</li>,
+                    p: ({ children }) => <p className="mb-4">{children}</p>,
+                  }}
+                >
+                  {response.notes}
+                </ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      );
     }
 
-    // Only show the empty state message for non-record modes
     if (Object.keys(response).length === 0) {
       return (
-        <motion.div
-          key="empty"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="text-center py-12"
-        >
-          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">
-            Upload a file and select a study format to begin
-          </p>
-        </motion.div>
+        <div className="text-center text-gray-500">
+          Upload a file and select a study format to get started
+        </div>
       );
     }
 
@@ -522,34 +608,6 @@ export default function Notes() {
       ) : null;
     }
 
-    if (
-      outputType === "audio" &&
-      (response.audio_url || response.tts_audio_url)
-    ) {
-      return (
-        <div className="space-y-4">
-          {response.audio_url && (
-            <div>
-              <h4 className="text-lg font-medium mb-2">Summary Audio</h4>
-              <audio controls className="w-full">
-                <source src={response.audio_url} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
-            </div>
-          )}
-          {response.tts_audio_url && (
-            <div>
-              <h4 className="text-lg font-medium mb-2">Full Reading</h4>
-              <audio controls className="w-full">
-                <source src={response.tts_audio_url} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
-            </div>
-          )}
-        </div>
-      );
-    }
-
     return null;
   };
 
@@ -583,55 +641,67 @@ export default function Notes() {
               {/* File Upload Section */}
               <Card className="p-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Only show file upload section if not in record mode */}
-                  {outputType !== "record" && (
-                    <>
-                      <div>
-                        <label
-                          htmlFor="file-upload"
-                          className="cursor-pointer block"
-                        >
-                          <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                            <Upload className="h-5 w-5" />
-                            <span className="text-sm">Upload study material</span>
-                          </div>
-                          <input
-                            id="file-upload"
-                            type="file"
-                            className="hidden"
-                            onChange={handleFileChange}
-                            accept=".pdf,.doc,.docx,.txt"
-                          />
-                        </label>
+                  <div>
+                    <label
+                      htmlFor="file-upload"
+                      className="cursor-pointer block"
+                    >
+                      <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+                        <Upload className="h-5 w-5" />
+                        <span className="text-sm">
+                          {outputType === "record" 
+                            ? "Upload audio file" 
+                            : "Upload study material"}
+                        </span>
                       </div>
+                      <input
+                        id="file-upload"
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept={
+                          outputType === "record"
+                            ? "audio/*"
+                            : ".pdf,.doc,.docx,.txt"
+                        }
+                      />
+                    </label>
+                    {outputType === "record" && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Supported formats: MP3, WAV, M4A, etc. (max 50MB)
+                      </p>
+                    )}
+                  </div>
 
-                      {/* File Preview */}
-                      {file && (
-                        <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-blue-500" />
-                              <div>
-                                <p className="text-sm font-medium truncate max-w-[150px]">
-                                  {file.name}
-                                </p>
-                                <p className="text-xs text-gray-500">
-                                  {(file.size / 1024 / 1024).toFixed(2)} MB
-                                </p>
-                              </div>
-                            </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setFile(null)}
-                              className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
-                            >
-                              Remove
-                            </Button>
+                  {/* File Preview */}
+                  {file && (
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {outputType === "record" ? (
+                            <Mic className="h-4 w-4 text-blue-500" />
+                          ) : (
+                            <FileText className="h-4 w-4 text-blue-500" />
+                          )}
+                          <div>
+                            <p className="text-sm font-medium truncate max-w-[150px]">
+                              {file.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
                           </div>
                         </div>
-                      )}
-                    </>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setFile(null)}
+                          className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
                   )}
 
                   {/* Study Format Selection */}
@@ -643,14 +713,11 @@ export default function Notes() {
                         return (
                           <button
                             key={format.id}
-                            type={format.id === "record" ? "button" : "submit"}
+                            type="button"
                             onClick={() => {
-                              if (format.id === "record") {
-                                handleRecordLecture();
-                              } else {
-                                console.log("Setting output type to:", format.id);
-                                setOutputType(format.id as StudyFormatType);
-                              }
+                              console.log("Setting output type to:", format.id);
+                              setOutputType(format.id as StudyFormatType);
+                              setFile(null); // Clear file when changing format
                             }}
                             className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm ${
                               outputType === format.id
@@ -666,23 +733,21 @@ export default function Notes() {
                     </div>
                   </div>
 
-                  {/* Only show Generate button if not in record mode */}
-                  {outputType !== "record" && (
-                    <Button
-                      type="submit"
-                      disabled={isLoading || !file}
-                      className="w-full"
-                    >
-                      {isLoading ? (
-                        <div className="flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                          <span>Processing...</span>
-                        </div>
-                      ) : (
-                        "Generate"
-                      )}
-                    </Button>
-                  )}
+                  {/* Generate button */}
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !file}
+                    className="w-full"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      outputType === "record" ? "Transcribe Audio" : "Generate"
+                    )}
+                  </Button>
                 </form>
               </Card>
             </div>
@@ -696,10 +761,7 @@ export default function Notes() {
                   </h3>
                   {outputType !== "quiz" &&
                     outputType !== "record" &&
-                    (response.summary ||
-                      response.notes ||
-                      response.audio_url ||
-                      response.tts_audio_url) && (
+                    (response.summary || response.notes) && (
                       <div className="flex items-center gap-2">
                         {showSaveDialog ? (
                           <>

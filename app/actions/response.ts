@@ -2,7 +2,12 @@
 
 import { headers } from "next/headers";
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const BACKEND_URL = process.env.BACKEND_URL || "https://ryzn-ai-server.onrender.com";
+
+if (!BACKEND_URL) {
+  throw new Error("BACKEND_URL environment variable is not set");
+}
+
 const RATE_LIMIT = 30; // requests per day
 
 // Simple in-memory cache
@@ -16,6 +21,12 @@ type RateLimitEntry = {
   timestamp: number;
 };
 
+type ContentContext = {
+  transcript?: string;
+  notes?: string;
+  summary?: string;
+};
+
 const cache = new Map<string, CacheEntry>();
 const rateLimitMap = new Map<string, RateLimitEntry>();
 
@@ -24,8 +35,11 @@ const CACHE_DURATION = 60 * 60 * 1000;
 // Rate limit duration: 24 hours
 const RATE_LIMIT_DURATION = 24 * 60 * 60 * 1000;
 
-function generateCacheKey(text: string, query: string): string {
-  return `${text.slice(0, 100)}_${query}`;
+function generateCacheKey(content: ContentContext | string, query: string): string {
+  const contentString = typeof content === 'string' 
+    ? content.slice(0, 100) 
+    : JSON.stringify(content).slice(0, 100);
+  return `${contentString}_${query}`;
 }
 
 function checkRateLimit(ip: string): boolean {
@@ -50,9 +64,12 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-export async function getResponse(text: string, message: string) {
+export async function getResponse(
+  content: ContentContext | string,
+  message: string
+) {
   try {
-    const headersList = headers();
+    const headersList = await headers();
     const forwardedFor = headersList.get("x-forwarded-for") || "unknown";
     const ip = forwardedFor.split(",")[0].trim();
 
@@ -63,12 +80,12 @@ export async function getResponse(text: string, message: string) {
 
     // Format the request body
     const requestBody = {
-      text: text || "",
+      content: typeof content === 'string' ? content : (content || {}),
       user_query: message,
     };
 
     // Generate cache key
-    const cacheKey = generateCacheKey(requestBody.text, requestBody.user_query);
+    const cacheKey = generateCacheKey(requestBody.content, requestBody.user_query);
 
     // Check cache
     const cachedResponse = cache.get(cacheKey);
@@ -76,8 +93,15 @@ export async function getResponse(text: string, message: string) {
       return cachedResponse.data;
     }
 
+    // Ensure BACKEND_URL is properly formatted
+    const apiUrl = BACKEND_URL.endsWith('/') ? BACKEND_URL.slice(0, -1) : BACKEND_URL;
+    const endpoint = `${apiUrl}/api/response`;
+
+    console.log("Sending request to:", endpoint);
+    console.log("Request body:", JSON.stringify(requestBody, null, 2));
+
     // Send request to backend
-    const response = await fetch(`${BACKEND_URL}/api/response`, {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,6 +109,9 @@ export async function getResponse(text: string, message: string) {
       body: JSON.stringify(requestBody),
       signal: AbortSignal.timeout(30000), // 30 second timeout
     });
+
+    console.log("Response status:", response.status);
+    console.log("Response headers:", Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       let errorDetails = "";
@@ -98,6 +125,7 @@ export async function getResponse(text: string, message: string) {
     }
 
     const data = await response.json();
+    console.log("Response data:", data);
 
     // Cache the successful response
     cache.set(cacheKey, { data, timestamp: Date.now() });

@@ -1,77 +1,107 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  Brain,
-  BookOpen,
-  Calculator,
-  ChevronRight,
-  User,
-  LineChart,
-  PenTool,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { ModelSelector } from "@/components/model-selector";
-import { ThemeToggle } from "@/components/theme-switcher";
+import type React from "react"
 
-export default function Dashboard() {
-  const router = useRouter();
-  const [userName, setUserName] = useState("Eden");
+import { useState, useRef, useEffect } from "react"
+import { Send, ArrowLeft, Sparkles, Loader2, PenTool } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ModelSelector } from "@/components/model-selector"
+import { ThemeToggle } from "@/components/theme-switcher"
+import Link from "next/link"
 
-  const handleTakeNotes = () => {
-    // Refresh the current view
-    window.location.reload();
-  };
+interface Message {
+  id: number
+  content: string
+  role: "user" | "assistant"
+  timestamp: Date
+}
 
-  const handleDeepLearn = () => {
-    // Navigate to chat
-    router.push("/chat");
-  };
+export default function ExcalidrawPage() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 1,
+      content:
+        "Hi! I'm Ryzn Excalidraw Assistant. I can help you create sketches, diagrams, and visual explanations for mathematical concepts. Describe what you'd like to draw or explain, and I'll guide you through using Excalidraw.",
+      role: "assistant",
+      timestamp: new Date(),
+    },
+  ])
+  const [inputValue, setInputValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [excalidrawLoaded, setExcalidrawLoaded] = useState(false)
+  const excalidrawRef = useRef<HTMLIFrameElement>(null)
 
-  const handleMathVisuals = () => {
-    // Navigate to math visuals with a proper state reset
-    router.push("/math-visuals");
-  };
+  // Scroll to bottom of messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
-  const handleDesmos = () => {
-    router.push("/desmos");
-  };
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inputValue.trim()) return
 
-  const handleExcalidraw = () => {
-    router.push("/excalidraw");
-  };
+    // Add user message
+    const userMessage: Message = {
+      id: messages.length + 1,
+      content: inputValue,
+      role: "user",
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    setInputValue("")
+    setIsLoading(true)
+
+    // Process the message and generate a response
+    setTimeout(() => {
+      const lowerInput = inputValue.toLowerCase()
+      let response =
+        "I've opened Excalidraw for you. You can use the drawing tools at the top to create your sketch. Try using the shapes, text, and arrow tools to illustrate your concept."
+
+      if (lowerInput.includes("triangle")) {
+        response =
+          "To draw a triangle in Excalidraw, select the line tool from the toolbar and draw three connected lines. You can also use the shape tool and select the triangle option. Try adding labels to the vertices and angles."
+      } else if (lowerInput.includes("circle") || lowerInput.includes("ellipse")) {
+        response =
+          "To draw a circle in Excalidraw, select the ellipse tool from the toolbar. Hold Shift while drawing to create a perfect circle. You can add labels for the center, radius, and circumference."
+      } else if (lowerInput.includes("graph") || lowerInput.includes("coordinate")) {
+        response =
+          "To create a coordinate system, first draw two perpendicular lines for the x and y axes. Add arrow tips using the arrow tool. Then use the grid background option in the settings menu to help align your points and functions."
+      } else if (lowerInput.includes("function") || lowerInput.includes("curve")) {
+        response =
+          "To sketch a function curve, you can use the freehand drawing tool for a rough sketch, or the curve tool for smoother lines. Start by drawing your coordinate axes, then add your function curve. Label key points like intercepts and extrema."
+      } else if (lowerInput.includes("diagram") || lowerInput.includes("flowchart")) {
+        response =
+          "For creating a flowchart or diagram, use the rectangle tool for process boxes, the diamond shape for decision points, and arrows to connect them. You can add text inside each shape to describe the steps."
+      }
+
+      const botResponse: Message = {
+        id: messages.length + 2,
+        content: response,
+        role: "assistant",
+        timestamp: new Date(),
+      }
+
+      setMessages((prev) => [...prev, botResponse])
+      setIsLoading(false)
+    }, 1500)
+  }
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 relative">
       {/* Net Background Pattern with Blur */}
       <div className="absolute inset-0 z-0">
-        {/* Blurred overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-gray-100/80 dark:from-gray-900/80 dark:to-gray-800/80 backdrop-blur-[8px]"></div>
-
-        {/* Net pattern with reduced opacity */}
+        {/* Net Background Pattern with Reduced Opacity */}
         <div className="absolute inset-0 z-0 opacity-5">
           <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-            <pattern
-              id="net-pattern"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M0 20 L40 20 M20 0 L20 40"
-                stroke="currentColor"
-                strokeWidth="0.5"
-              />
+            <pattern id="net-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M0 20 L40 20 M20 0 L20 40" stroke="currentColor" strokeWidth="0.5" />
             </pattern>
             <rect width="100%" height="100%" fill="url(#net-pattern)" />
           </svg>
@@ -81,197 +111,149 @@ export default function Dashboard() {
       {/* Header */}
       <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md dark:bg-gray-900/80 border-b dark:border-gray-800 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold">
-            <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
-              rzn.AI
-            </span>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/dashboard">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+            </Button>
+            <h1 className="font-semibold text-lg">Excalidraw Sketching</h1>
+          </div>
           <div className="flex items-center gap-4">
             <ModelSelector />
             <ThemeToggle />
-            <Button variant="outline" size="sm" className="gap-2">
-              <User size={16} />
-              <span>{userName}</span>
-            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 pt-32 pb-16 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          {/* Welcome Section */}
-          <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              What are you learning today?
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-              Choose from our learning tools to enhance your educational journey
-            </p>
+      {/* Main Content - Two Column Layout */}
+      <div className="pt-16 h-screen flex">
+        {/* Left Column - Chat Interface */}
+        <div className="w-1/3 border-r dark:border-gray-800 flex flex-col">
+          <div className="flex-1 overflow-auto p-4 space-y-4">
+            {messages.map((message) => (
+              <div key={message.id} className="mb-6">
+                <div className="flex items-start gap-3">
+                  <div
+                    className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center ${
+                      message.role === "assistant"
+                        ? "bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300"
+                        : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                    }`}
+                  >
+                    {message.role === "assistant" ? <Sparkles className="h-4 w-4" /> : "U"}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium text-sm">
+                        {message.role === "assistant" ? "Ryzn Excalidraw Assistant" : "You"}
+                      </span>
+                      <span className="text-xs text-gray-500">{formatTime(message.timestamp)}</span>
+                    </div>
+                    <div className="text-sm whitespace-pre-line">{message.content}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-300 flex items-center justify-center">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-medium text-sm">Ryzn Excalidraw Assistant</span>
+                    <span className="text-xs text-gray-500">{formatTime(new Date())}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm text-gray-500">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
           </div>
 
-          {/* Cards Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Deep Learn Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleDeepLearn}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Brain className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  Deep Learn with Ryzn
-                </CardTitle>
-                <CardDescription>
-                  Interactive AI-powered learning through conversation
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Engage in deep conversations with our AI to understand complex
-                  concepts through the Feynman technique.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-blue-600 dark:text-blue-400">
-                  Start learning
-                </span>
-                <ChevronRight className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Take Notes Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleTakeNotes}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-purple-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <BookOpen className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                  Take Notes with Ryzn
-                </CardTitle>
-                <CardDescription>
-                  AI-powered note-taking and organization
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Transform lectures, videos, and readings into organized notes
-                  with our AI assistant.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-purple-600 dark:text-purple-400">
-                  Organize your thoughts
-                </span>
-                <ChevronRight className="h-5 w-5 text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Learn Math Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleMathVisuals}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Calculator className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  Learn Math with Ryzn + Prometheus
-                </CardTitle>
-                <CardDescription>
-                  Advanced mathematics learning platform
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Master mathematics from algebra to calculus with our
-                  specialized AI tutor and interactive exercises.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-green-600 dark:text-green-400">
-                  Solve problems
-                </span>
-                <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Desmos Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleDesmos}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <LineChart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  Desmos Graphing
-                </CardTitle>
-                <CardDescription>
-                  Interactive function graphing and exploration
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Visualize mathematical functions and equations with our
-                  interactive Desmos graphing calculator.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-blue-600 dark:text-blue-400">
-                  Graph equations
-                </span>
-                <ChevronRight className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Excalidraw Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleExcalidraw}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <PenTool className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  Excalidraw Sketching
-                </CardTitle>
-                <CardDescription>Visual math concept sketching</CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Create diagrams, sketches, and visual explanations for
-                  mathematical concepts with our drawing tools.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-green-600 dark:text-green-400">
-                  Start drawing
-                </span>
-                <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
+          {/* Chat Input */}
+          <div className="p-4 border-t dark:border-gray-800">
+            <form className="flex gap-2" onSubmit={handleSendMessage}>
+              <Input
+                placeholder="Ask how to draw something or explain a concept..."
+                className="flex-1"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                className="bg-green-600 hover:bg-green-700 text-white"
+                disabled={isLoading || !inputValue.trim()}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
           </div>
         </div>
-      </main>
+
+        {/* Right Column - Excalidraw */}
+        <div className="w-2/3 flex flex-col">
+          {/* Header */}
+          <div className="border-b dark:border-gray-800 px-4 flex justify-between items-center h-12">
+            <div className="flex items-center gap-2">
+              <PenTool className="h-4 w-4" />
+              <span className="font-medium">Excalidraw Whiteboard</span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (excalidrawRef.current && excalidrawRef.current.contentWindow) {
+                  // In a real implementation, we would use the Excalidraw API
+                  try {
+                    // Just a placeholder for demonstration
+                    alert("Canvas cleared!")
+                  } catch (error) {
+                    console.error("Error clearing Excalidraw canvas:", error)
+                  }
+                }
+              }}
+            >
+              Clear Canvas
+            </Button>
+          </div>
+
+          {/* Excalidraw Content */}
+          <div className="flex-1 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 h-full flex flex-col">
+              <div className="flex-1 relative">
+                <iframe
+                  ref={excalidrawRef}
+                  src="https://excalidraw.com/"
+                  className="w-full h-full border-0"
+                  title="Excalidraw Whiteboard"
+                  allow="fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                  onLoad={() => {
+                    console.log("Excalidraw iframe loaded")
+                    setExcalidrawLoaded(true)
+                  }}
+                />
+                {!excalidrawLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+                      <p>Loading Excalidraw Whiteboard...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
+
+

@@ -13,10 +13,18 @@ type Message = {
   timestamp: Date;
 };
 
+type ChatInterfaceProps = {
+  content?: {
+    transcript?: string;
+    notes?: string;
+    summary?: string;
+  };
+};
+
 // Get the API URL from environment variables with a fallback
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export function ChatInterface() {
+export function ChatInterface({ content }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -51,7 +59,7 @@ export function ChatInterface() {
     setIsTyping(true);
 
     try {
-      const data = await getResponse("", newMessage.content);
+      const data = await getResponse({}, newMessage.content);
 
       // Simulate typing effect
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -88,7 +96,7 @@ export function ChatInterface() {
       
       reader.onload = async () => {
         const base64Audio = reader.result as string;
-        const data = await getResponse(base64Audio, "Process this voice message");
+        const data = await getResponse({}, "Process this voice message");
         
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
