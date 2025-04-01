@@ -100,31 +100,31 @@ export default function Home() {
                     />
                   </div>
                   <h3 className="text-2xl font-semibold mb-4">Study Materials on Demand</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    No time to make study materials? No problem! AI-generated
-                    flashcards and quizzes to test understanding.
-                  </p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">
+                      No time to make study materials? No problem! AI-generated
+                      flashcards and quizzes to test understanding.
+                    </p>
                   <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Instant flashcard generation
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Adaptive quizzes
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Personalized study plans
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Instant flashcard generation
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Adaptive quizzes
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Personalized study plans
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
 
                 {/* Note-taking */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
@@ -137,31 +137,31 @@ export default function Home() {
                     />
                   </div>
                   <h3 className="text-2xl font-semibold mb-4">Note-taking on Autopilot</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Turn your lecture notes - video, audio, pdf, ppt - into
-                    organized notes instantly.
-                  </p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">
+                      Turn your lecture notes - video, audio, pdf, ppt - into
+                      organized notes instantly.
+                    </p>
                   <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Multi-format support
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        AI-powered summarization
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Smart organization
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Multi-format support
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          AI-powered summarization
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Smart organization
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
 
                 {/* Deep Learning */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
@@ -174,31 +174,31 @@ export default function Home() {
                     />
                   </div>
                   <h3 className="text-2xl font-semibold mb-4">Deep Learning with Ryzn</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Engaging voice chat AI to prime you into thinking deeper
-                    about concepts and problems.
-                  </p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">
+                      Engaging voice chat AI to prime you into thinking deeper
+                      about concepts and problems.
+                    </p>
                   <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Interactive voice conversations
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Concept exploration
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Adaptive learning paths
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Interactive voice conversations
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Concept exploration
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Adaptive learning paths
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
 
                 {/* AI Technology */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
@@ -211,25 +211,25 @@ export default function Home() {
                     />
                   </div>
                   <h3 className="text-2xl font-semibold mb-4">Latest AI Technology</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">
                     Powered by state-of-the-art AI models for engaging learning experiences.
-                  </p>
+                    </p>
                   <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
                         Advanced language models
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Multi-modal AI integration
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Multi-modal AI integration
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
                         Continuous updates
                       </span>
                     </li>
@@ -261,16 +261,16 @@ export default function Home() {
                       <div className="h-2 w-2 bg-blue-500 rounded-full" />
                       <span className="text-gray-600 dark:text-gray-300">
                         Context-aware conversations
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
+                        </span>
+                      </li>
+                      <li className="flex items-center gap-3">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                        <span className="text-gray-600 dark:text-gray-300">
                         Personalized learning
-                      </span>
-                    </li>
-                  </ul>
-                </div>
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
 
                 {/* Content Generation */}
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
@@ -328,7 +328,7 @@ export default function Home() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
                   <div className="relative">
                     <h3 className="text-2xl font-semibold mb-2">Free</h3>
-                    <div className="flex items-baseline gap-2 mb-4">
+                  <div className="flex items-baseline gap-2 mb-4">
                       <span className="text-4xl font-bold">$0</span>
                       <span className="text-gray-600 dark:text-gray-300">/month</span>
                     </div>
@@ -382,7 +382,7 @@ export default function Home() {
                     </ul>
                     <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12">
                       <Link href="/sign-up">Sign up now!</Link>
-                    </Button>
+                  </Button>
                   </div>
                 </div>
 
@@ -391,7 +391,7 @@ export default function Home() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
                   <div className="relative">
                     <h3 className="text-2xl font-semibold mb-2">Enterprise</h3>
-                    <div className="flex items-baseline gap-2 mb-4">
+                  <div className="flex items-baseline gap-2 mb-4">
                       <span className="text-4xl font-bold">Custom</span>
                     </div>
                     <p className="text-blue-600 dark:text-blue-400 mb-6">For organizations</p>
@@ -431,11 +431,11 @@ export default function Home() {
                   RyznAI: Deep Learning through Reason.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/dashboard">
-                    <Button className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg">
-                      Try ryznAI today!
-                    </Button>
-                  </Link>
+                <Link href="/dashboard">
+                  <Button className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg">
+                    Try ryznAI today!
+                  </Button>
+                </Link>
                   <Link href="/sign-up">
                     <Button className="bg-transparent hover:bg-white/10 text-white border-2 border-white h-12 px-8 rounded-full text-lg">
                       Get Started Free
