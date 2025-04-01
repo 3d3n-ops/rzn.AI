@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { ChatInterface } from "../components/ChatInterface";
 import { Header } from "../components/Header";
@@ -21,9 +20,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { AudioRecorder } from "../components/audio-recorder";
 import { summarizeContent } from "../actions/summarize";
-import { getResponse } from "../actions/response";
 import { transcribeAudio } from "../actions/transcribe";
 
 type StudyFormatType = "notes" | "summary" | "quiz" | "record";
