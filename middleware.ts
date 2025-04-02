@@ -8,9 +8,9 @@ import type { AuthObject } from "@clerk/nextjs/server";
 export default authMiddleware({
   publicRoutes: ["/", "/sign-in[[...sign-in]]", "/sign-up[[...sign-up]]"],
   afterAuth(auth, req) {
-    // Redirect signed-in users from landing page to dashboard
-    if (auth.userId && new URL(req.url).pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
+    // Allow access to home page for all users
+    if (new URL(req.url).pathname === "/") {
+      return NextResponse.next();
     }
 
     // Redirect signed-in users away from auth pages
