@@ -80,7 +80,6 @@ export default function Notes() {
   // Handle format selection
   const handleFormatSelect = (format: StudyFormatType) => {
     setOutputType(format);
-    setFile(null); // Clear any existing file
     setResponse({}); // Clear any existing response
     
     if (format === "record") {
@@ -101,6 +100,22 @@ export default function Notes() {
         }
         if (selectedFile.size > 50 * 1024 * 1024) {
           setError("Audio file size must be less than 50MB");
+          return;
+        }
+      } else {
+        // Validate file types for other formats
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain'
+        ];
+        if (!allowedTypes.includes(selectedFile.type)) {
+          setError("Please select a valid file (PDF, DOC, DOCX, or TXT)");
+          return;
+        }
+        if (selectedFile.size > 10 * 1024 * 1024) {
+          setError("File size must be less than 10MB");
           return;
         }
       }
@@ -812,9 +827,13 @@ export default function Notes() {
                       >
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mb-4" />
                         <p className="text-gray-600 dark:text-gray-400">
-                          {outputType === "quiz"
+                          {outputType === "record"
+                            ? "Transcribing audio..."
+                            : outputType === "quiz"
                             ? "Generating quiz..."
-                            : "Processing your file..."}
+                            : outputType === "summary"
+                            ? "Creating summary..."
+                            : "Generating notes..."}
                         </p>
                       </motion.div>
                     ) : (
@@ -835,7 +854,13 @@ export default function Notes() {
 
             {/* Right Column - Chat Interface */}
             <div className="col-span-3">
-              <ChatInterface />
+              <ChatInterface 
+                content={{
+                  transcript: response.transcript,
+                  notes: response.notes,
+                  summary: response.summary
+                }}
+              />
             </div>
           </div>
         </div>

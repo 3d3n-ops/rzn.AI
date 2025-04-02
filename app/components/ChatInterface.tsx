@@ -59,7 +59,7 @@ export function ChatInterface({ content }: ChatInterfaceProps) {
     setIsTyping(true);
 
     try {
-      const data = await getResponse({}, newMessage.content);
+      const data = await getResponse(content || {}, newMessage.content);
 
       // Simulate typing effect
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -68,7 +68,7 @@ export function ChatInterface({ content }: ChatInterfaceProps) {
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response,
+        content: data.response || "I apologize, but I couldn't generate a response. Please try again.",
         role: "assistant",
         timestamp: new Date(),
       };
