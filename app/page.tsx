@@ -76,7 +76,7 @@ export default function Home() {
           </div>
 
           {/* Features Section */}
-          <section className="py-32 relative">
+          <section className="py-32 relative overflow-hidden">
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold mb-4">
@@ -87,225 +87,239 @@ export default function Home() {
                 </p>
               </div>
 
-              {/* Features Grid */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                {/* Study Materials */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
-                      alt="Study Materials"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">Study Materials on Demand</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">
-                      No time to make study materials? No problem! AI-generated
-                      flashcards and quizzes to test understanding.
-                    </p>
-                  <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Instant flashcard generation
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Adaptive quizzes
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Personalized study plans
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-
-                {/* Note-taking */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-blue-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Select%20Files%20-ba4ojlYSBdtGzY0fZfZfUNk9ptcuQl.png"
-                      alt="Note-taking"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">Note-taking on Autopilot</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">
-                      Turn your lecture notes - video, audio, pdf, ppt - into
-                      organized notes instantly.
-                    </p>
-                  <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Multi-format support
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          AI-powered summarization
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Smart organization
-                        </span>
-                      </li>
-                    </ul>
+              {/* Features Grid with Parallax */}
+              <div className="relative">
+                <div className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 scrollbar-hide">
+                  {/* Study Materials */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Study Materials"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Study Materials on Demand</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        No time to make study materials? No problem! AI-generated
+                        flashcards and quizzes to test understanding.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Instant flashcard generation
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Adaptive quizzes
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Personalized study plans
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
 
-                {/* Deep Learning */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
-                      alt="Deep Learning"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">Deep Learning with Ryzn</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">
-                      Engaging voice chat AI to prime you into thinking deeper
-                      about concepts and problems.
-                    </p>
-                  <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Interactive voice conversations
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Concept exploration
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Adaptive learning paths
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-
-                {/* AI Technology */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Model%20Selection%20LLM-e8c0C98CkQYdjnlV8DLgSG3TobNCXY.png"
-                      alt="AI Technology"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">Latest AI Technology</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Powered by state-of-the-art AI models for engaging learning experiences.
-                    </p>
-                  <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                        Advanced language models
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                          Multi-modal AI integration
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                        Continuous updates
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Voice Chat */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-pink-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
-                      alt="Voice Chat"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <h3 className="text-2xl font-semibold mb-4">Interactive Voice Chat</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Natural conversations with AI to deepen your understanding.
-                  </p>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Real-time responses
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Context-aware conversations
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                        <span className="text-gray-600 dark:text-gray-300">
-                        Personalized learning
-                        </span>
-                      </li>
-                    </ul>
+                  {/* Note-taking */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-blue-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Select%20Files%20-ba4ojlYSBdtGzY0fZfZfUNk9ptcuQl.png"
+                          alt="Note-taking"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Note-taking on Autopilot</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Turn your lecture notes - video, audio, pdf, ppt - into
+                        organized notes instantly.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Multi-format support
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            AI-powered summarization
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Smart organization
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
 
-                {/* Content Generation */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20" />
-                    <img
-                      src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
-                      alt="Content Generation"
-                      className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                    />
+                  {/* Deep Learning */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Deep Learning"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Deep Learning with Ryzn</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Engaging voice chat AI to prime you into thinking deeper
+                        about concepts and problems.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Interactive voice conversations
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Concept exploration
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Adaptive learning paths
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-semibold mb-4">Smart Content Generation</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-6">
-                    Generate high-quality study materials from your content.
-                  </p>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Summaries & notes
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Practice questions
-                      </span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <div className="h-2 w-2 bg-blue-500 rounded-full" />
-                      <span className="text-gray-600 dark:text-gray-300">
-                        Key concepts
-                      </span>
-                    </li>
-                  </ul>
+
+                  {/* AI Technology */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Model%20Selection%20LLM-e8c0C98CkQYdjnlV8DLgSG3TobNCXY.png"
+                          alt="AI Technology"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Latest AI Technology</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Powered by state-of-the-art AI models for engaging learning experiences.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Advanced language models
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Multi-modal AI integration
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Continuous updates
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Voice Chat */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-pink-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Voice Chat"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Interactive Voice Chat</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Natural conversations with AI to deepen your understanding.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Real-time responses
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Context-aware conversations
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Personalized learning
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Content Generation */}
+                  <div className="flex-none w-[300px] snap-center">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 group h-full">
+                      <div className="relative h-48 mb-6 rounded-xl overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20" />
+                        <img
+                          src="https://xuot59okd8gfywot.public.blob.vercel-storage.com/Quiz%20Pics-EWYSFJAkHdWgu26ec8LdQMBdaTjBM1.png"
+                          alt="Content Generation"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-4">Smart Content Generation</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6">
+                        Generate high-quality study materials from your content.
+                      </p>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Summaries & notes
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Practice questions
+                          </span>
+                        </li>
+                        <li className="flex items-center gap-3">
+                          <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                          <span className="text-gray-600 dark:text-gray-300">
+                            Key concepts
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

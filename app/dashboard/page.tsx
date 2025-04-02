@@ -22,6 +22,7 @@ import {
 import { ModelSelector } from "@/components/model-selector";
 import { ThemeToggle } from "@/components/theme-switcher";
 import { StatusBadge } from "@/components/status-badge";
+import { Header } from "@/app/components/Header";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -69,24 +70,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Header */}
-      <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md dark:bg-gray-900/80 border-b dark:border-gray-800 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold">
-            <span className="bg-gradient-to-r from-blue-400 via-blue-600 to-blue-800 bg-clip-text text-transparent">
-              rzn.AI
-            </span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <ModelSelector />
-            <ThemeToggle />
-            <Button variant="outline" size="sm" className="gap-2">
-              <User size={16} />
-              <span>{userName}</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 pt-32 pb-16 relative z-10">
