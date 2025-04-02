@@ -69,17 +69,28 @@ export default function Notes() {
   const [response, setResponse] = useState<StudyResponse>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [fileName, setFileName] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<
-    Record<string, string>
-  >({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [showAudioUpload, setShowAudioUpload] = useState(false);
 
+  // Handle format selection
+  const handleFormatSelect = (format: StudyFormatType) => {
+    setOutputType(format);
+    setFile(null); // Clear any existing file
+    setResponse({}); // Clear any existing response
+    
+    if (format === "record") {
+      setShowAudioUpload(true);
+    } else {
+      setShowAudioUpload(false);
+    }
+  };
+
+  // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -94,55 +105,40 @@ export default function Notes() {
         }
       }
       setFile(selectedFile);
+      setError(""); // Clear any previous errors
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      console.log("Selected output type:", outputType);
-      console.log("File type:", file?.type);
-      console.log("File size:", file?.size);
-      
       if (!file) {
         throw new Error("No file selected");
       }
 
       let data;
       if (outputType === "record") {
-        console.log("Starting audio transcription process...");
-        // Handle audio transcription
         data = await transcribeAudio(file);
-        console.log("Audio transcription response:", data);
       } else {
-        console.log("Starting content summarization process...");
-        // Handle other file types (PDF, text, etc.)
         data = await summarizeContent(file, outputType);
-        console.log("Response data:", data);
       }
 
-      // For all output types, set the response data
       setResponse(data);
 
-      // Only additional validation for quiz output type
+      if (outputType === "quiz" && !data.quiz) {
+        throw new Error("No quiz data received");
+      }
+
       if (outputType === "quiz") {
-        if (!data.quiz) {
-          throw new Error("No quiz data received");
-        }
-
-        console.log("Quiz data structure:", JSON.stringify(data.quiz, null, 2));
-
-        // Directly access and set the quiz data from the response
         setQuiz(data.quiz);
       }
     } catch (error) {
       console.error("Error generating content:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to generate content"
-      );
+      setError(error instanceof Error ? error.message : "Failed to generate content");
     } finally {
       setIsLoading(false);
     }
@@ -638,37 +634,56 @@ export default function Notes() {
               {/* File Upload Section */}
               <Card className="p-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Study Format Selection */}
                   <div>
-                    <label
-                      htmlFor="file-upload"
-                      className="cursor-pointer block"
-                    >
-                      <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
-                        <Upload className="h-5 w-5" />
-                        <span className="text-sm">
-                          {outputType === "record" 
-                            ? "Upload audio file" 
-                            : "Upload study material"}
-                        </span>
-                      </div>
-                      <input
-                        id="file-upload"
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileChange}
-                        accept={
-                          outputType === "record"
-                            ? "audio/*"
-                            : ".pdf,.doc,.docx,.txt"
-                        }
-                      />
-                    </label>
-                    {outputType === "record" && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        Supported formats: MP3, WAV, M4A, etc. (max 50MB)
-                      </p>
-                    )}
+                    <h3 className="text-sm font-medium mb-3">Study Format</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {studyFormats.map((format) => {
+                        const Icon = format.icon;
+                        return (
+                          <button
+                            key={format.id}
+                            type="button"
+                            onClick={() => handleFormatSelect(format.id as StudyFormatType)}
+                            className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm ${
+                              outputType === format.id
+                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
+                            }`}
+                          >
+                            <Icon className="h-4 w-4" />
+                            <span>{format.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
+
+                  {/* File Upload Section - Only show if format is selected */}
+                  {outputType && (
+                    <div>
+                      <label htmlFor="file-upload" className="cursor-pointer block">
+                        <div className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-500 transition-colors">
+                          {outputType === "record" ? <Mic className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
+                          <span className="text-sm">
+                            {outputType === "record" ? "Upload audio file" : "Upload study material"}
+                          </span>
+                        </div>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileChange}
+                          accept={outputType === "record" ? "audio/*" : ".pdf,.doc,.docx,.txt"}
+                        />
+                      </label>
+                      {outputType === "record" && (
+                        <p className="text-xs text-gray-500 mt-2">
+                          Supported formats: MP3, WAV, M4A, etc. (max 50MB)
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* File Preview */}
                   {file && (
@@ -701,50 +716,23 @@ export default function Notes() {
                     </div>
                   )}
 
-                  {/* Study Format Selection */}
-                  <div>
-                    <h3 className="text-sm font-medium mb-3">Study Format</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      {studyFormats.map((format) => {
-                        const Icon = format.icon;
-                        return (
-                          <button
-                            key={format.id}
-                            type="button"
-                            onClick={() => {
-                              console.log("Setting output type to:", format.id);
-                              setOutputType(format.id as StudyFormatType);
-                              setFile(null); // Clear file when changing format
-                            }}
-                            className={`flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all text-sm ${
-                              outputType === format.id
-                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                                : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
-                            }`}
-                          >
-                            <Icon className="h-4 w-4" />
-                            <span>{format.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Generate button */}
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !file}
-                    className="w-full"
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                        <span>Processing...</span>
-                      </div>
-                    ) : (
-                      outputType === "record" ? "Transcribe Audio" : "Generate"
-                    )}
-                  </Button>
+                  {/* Generate button - Only show if file is selected */}
+                  {file && (
+                    <Button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full"
+                    >
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                          <span>Processing...</span>
+                        </div>
+                      ) : (
+                        outputType === "record" ? "Transcribe Audio" : "Generate"
+                      )}
+                    </Button>
+                  )}
                 </form>
               </Card>
             </div>

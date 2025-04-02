@@ -36,7 +36,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  <Analytics />;
   return (
     <ClerkProvider>
       <html
@@ -76,6 +75,7 @@ export default function RootLayout({
               </div>
 
               <div className="relative z-10">{children}</div>
+              <Analytics />
             </div>
           </ThemeProvider>
         </body>

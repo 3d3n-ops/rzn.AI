@@ -9,9 +9,6 @@ import {
   Calculator,
   ChevronRight,
   User,
-  LineChart,
-  PenTool,
-  Mic,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +21,7 @@ import {
 } from "@/components/ui/card";
 import { ModelSelector } from "@/components/model-selector";
 import { ThemeToggle } from "@/components/theme-switcher";
+import { StatusBadge } from "@/components/status-badge";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -42,18 +40,6 @@ export default function Dashboard() {
   const handleMathVisuals = () => {
     // Navigate to math visuals with a proper state reset
     router.push("/math-visuals");
-  };
-
-  const handleDesmos = () => {
-    router.push("/desmos");
-  };
-
-  const handleExcalidraw = () => {
-    router.push("/excalidraw");
-  };
-
-  const handleLectureRecorder = () => {
-    router.push("/lecture-recorder");
   };
 
   return (
@@ -119,10 +105,13 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Deep Learn Card */}
             <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleDeepLearn}
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-not-allowed opacity-70 overflow-hidden"
+              onClick={() => {}}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-300"></div>
+              <div className="absolute top-4 right-4 z-10">
+                <StatusBadge status="coming-soon" />
+              </div>
 
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-2xl">
@@ -143,7 +132,7 @@ export default function Dashboard() {
 
               <CardFooter className="flex justify-between items-center">
                 <span className="text-sm text-blue-600 dark:text-blue-400">
-                  Start learning
+                  Coming soon
                 </span>
                 <ChevronRight className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
               </CardFooter>
@@ -155,6 +144,9 @@ export default function Dashboard() {
               onClick={handleTakeNotes}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-purple-500/20 transition-all duration-300"></div>
+              <div className="absolute top-4 right-4 z-10">
+                <StatusBadge status="live" />
+              </div>
 
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-2xl">
@@ -183,10 +175,13 @@ export default function Dashboard() {
 
             {/* Learn Math Card */}
             <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleMathVisuals}
+              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-not-allowed opacity-70 overflow-hidden"
+              onClick={() => {}}
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
+              <div className="absolute top-4 right-4 z-10">
+                <StatusBadge status="coming-soon" />
+              </div>
 
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-2xl">
@@ -207,102 +202,9 @@ export default function Dashboard() {
 
               <CardFooter className="flex justify-between items-center">
                 <span className="text-sm text-green-600 dark:text-green-400">
-                  Solve problems
+                  Coming soon
                 </span>
                 <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Desmos Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleDesmos}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <LineChart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                  Desmos Graphing
-                </CardTitle>
-                <CardDescription>
-                  Interactive function graphing and exploration
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Visualize mathematical functions and equations with our
-                  interactive Desmos graphing calculator.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-blue-600 dark:text-blue-400">
-                  Graph equations
-                </span>
-                <ChevronRight className="h-5 w-5 text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Excalidraw Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleExcalidraw}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <PenTool className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  Excalidraw Sketching
-                </CardTitle>
-                <CardDescription>Visual math concept sketching</CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Create diagrams, sketches, and visual explanations for
-                  mathematical concepts with our drawing tools.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-green-600 dark:text-green-400">
-                  Start drawing today!
-                </span>
-                <ChevronRight className="h-5 w-5 text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform" />
-              </CardFooter>
-            </Card>
-
-            {/* Lecture Recorder Card */}
-            <Card
-              className="group hover:shadow-lg transition-all duration-300 hover:translate-y-[-5px] cursor-pointer overflow-hidden"
-              onClick={handleLectureRecorder}
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-500/20 transition-all duration-300"></div>
-
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Mic className="h-6 w-6 text-orange-600 dark:text-orange-400" />
-                  Lecture Recorder
-                </CardTitle>
-                <CardDescription>
-                  Record and transcribe lectures
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Record your lectures and get instant transcriptions with AI-generated notes.
-                </p>
-              </CardContent>
-
-              <CardFooter className="flex justify-between items-center">
-                <span className="text-sm text-orange-600 dark:text-orange-400">
-                  Start recording
-                </span>
-                <ChevronRight className="h-5 w-5 text-orange-600 dark:text-orange-400 group-hover:translate-x-1 transition-transform" />
               </CardFooter>
             </Card>
           </div>
