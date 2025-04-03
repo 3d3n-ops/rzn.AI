@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import {
   Bar,
   BarChart,
@@ -14,6 +16,17 @@ import {
 import { Header } from "./components/Header";
 
 export default function Home() {
+  const { isSignedIn } = useAuth();
+  const router = useRouter();
+
+  const handleCTAClick = () => {
+    if (isSignedIn) {
+      router.push("/dashboard");
+    } else {
+      router.push("/sign-up");
+    }
+  };
+
   return (
     <div className="min-h-screen relative">
       <Header />
@@ -36,14 +49,13 @@ export default function Home() {
               your learning
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto">
-              Improve your study experience by deep learning through AI voice
-              chat.
+              Improve your study experience with ryznAI. 
             </p>
             <Button
-              asChild
+              onClick={handleCTAClick}
               className="h-12 px-8 text-lg bg-gray-900 hover:bg-gray-800 text-white dark:bg-blue-600 dark:hover:bg-blue-700"
             >
-              <Link href="/sign-up"> Try Ryzn Now!</Link>
+              {isSignedIn ? "Go to Dashboard" : "Try Ryzn Now!"}
             </Button>
           </div>
 
@@ -314,8 +326,11 @@ export default function Home() {
                         <span>Limited math workspace help</span>
                       </li>
                     </ul>
-                    <Button asChild className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 h-12">
-                      <Link href="/sign-up">Sign up today</Link>
+                    <Button 
+                      onClick={handleCTAClick}
+                      className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 h-12"
+                    >
+                      {isSignedIn ? "Go to Dashboard" : "Sign up today"}
                     </Button>
                   </div>
                 </div>
@@ -342,14 +357,17 @@ export default function Home() {
                         <div className="h-2 w-2 bg-blue-500 rounded-full" />
                         <span>Unlimited voice chat sessions</span>
                       </li>
-                      <li className="flex items-center gap-2">
-                        <div className="h-2 w-2 bg-blue-500 rounded-full" />
+                      <li className="flex items-start gap-2">
+                        <div className="h-2 w-2 bg-blue-500 rounded-full mt-2" />
                         <span>Full math workspace access</span>
                       </li>
                     </ul>
-                    <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12">
-                      <Link href="/sign-up">Sign up now!</Link>
-                  </Button>
+                    <Button 
+                      onClick={handleCTAClick}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12"
+                    >
+                      {isSignedIn ? "Go to Dashboard" : "Sign up now!"}
+                    </Button>
                   </div>
                 </div>
 
@@ -376,8 +394,11 @@ export default function Home() {
                         <span>Custom integrations</span>
                       </li>
                     </ul>
-                    <Button asChild className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 h-12">
-                      <Link href="/contact">Contact Sales</Link>
+                    <Button 
+                      onClick={handleCTAClick}
+                      className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 h-12"
+                    >
+                      {isSignedIn ? "Go to Dashboard" : "Contact Sales"}
                     </Button>
                   </div>
                 </div>
@@ -398,16 +419,18 @@ export default function Home() {
                   RyznAI: Deep Learning through Reason.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/dashboard">
-                  <Button className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg">
-                    Try ryznAI today!
+                  <Button 
+                    onClick={handleCTAClick}
+                    className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg"
+                  >
+                    {isSignedIn ? "Go to Dashboard" : "Try ryznAI today!"}
                   </Button>
-                </Link>
-                  <Link href="/sign-up">
-                    <Button className="bg-transparent hover:bg-white/10 text-white border-2 border-white h-12 px-8 rounded-full text-lg">
-                      Get Started Free
-                    </Button>
-                  </Link>
+                  <Button 
+                    onClick={handleCTAClick}
+                    className="bg-transparent hover:bg-white/10 text-white border-2 border-white h-12 px-8 rounded-full text-lg"
+                  >
+                    {isSignedIn ? "Go to Dashboard" : "Get Started Free"}
+                  </Button>
                 </div>
               </div>
             </div>
