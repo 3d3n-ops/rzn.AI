@@ -307,7 +307,7 @@ export default function Home() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
                   <div className="relative">
                     <h3 className="text-2xl font-semibold mb-2">Free</h3>
-                  <div className="flex items-baseline gap-2 mb-4">
+                    <div className="flex items-baseline gap-2 mb-4">
                       <span className="text-4xl font-bold">$0</span>
                       <span className="text-gray-600 dark:text-gray-300">/month</span>
                     </div>
@@ -327,10 +327,10 @@ export default function Home() {
                       </li>
                     </ul>
                     <Button 
-                      onClick={handleCTAClick}
+                      onClick={() => router.push("/sign-up")}
                       className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 h-12"
                     >
-                      {isSignedIn ? "Go to Dashboard" : "Sign up today"}
+                      Sign up today
                     </Button>
                   </div>
                 </div>
@@ -363,10 +363,10 @@ export default function Home() {
                       </li>
                     </ul>
                     <Button 
-                      onClick={handleCTAClick}
+                      onClick={() => router.push("/sign-up")}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12"
                     >
-                      {isSignedIn ? "Go to Dashboard" : "Sign up now!"}
+                      Sign up now!
                     </Button>
                   </div>
                 </div>
@@ -376,7 +376,7 @@ export default function Home() {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-500" />
                   <div className="relative">
                     <h3 className="text-2xl font-semibold mb-2">Enterprise</h3>
-                  <div className="flex items-baseline gap-2 mb-4">
+                    <div className="flex items-baseline gap-2 mb-4">
                       <span className="text-4xl font-bold">Custom</span>
                     </div>
                     <p className="text-blue-600 dark:text-blue-400 mb-6">For organizations</p>
@@ -395,10 +395,10 @@ export default function Home() {
                       </li>
                     </ul>
                     <Button 
-                      onClick={handleCTAClick}
+                      onClick={() => router.push("/contact")}
                       className="w-full bg-gray-900 hover:bg-gray-800 dark:bg-purple-600 dark:hover:bg-purple-700 h-12"
                     >
-                      {isSignedIn ? "Go to Dashboard" : "Contact Sales"}
+                      Contact Sales
                     </Button>
                   </div>
                 </div>
@@ -419,18 +419,29 @@ export default function Home() {
                   RyznAI: Deep Learning through Reason.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button 
-                    onClick={handleCTAClick}
-                    className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg"
-                  >
-                    {isSignedIn ? "Go to Dashboard" : "Try ryznAI today!"}
-                  </Button>
-                  <Button 
-                    onClick={handleCTAClick}
-                    className="bg-transparent hover:bg-white/10 text-white border-2 border-white h-12 px-8 rounded-full text-lg"
-                  >
-                    {isSignedIn ? "Go to Dashboard" : "Get Started Free"}
-                  </Button>
+                  {isSignedIn ? (
+                    <Button 
+                      onClick={() => router.push("/dashboard")}
+                      className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg"
+                    >
+                      Return to Dashboard
+                    </Button>
+                  ) : (
+                    <>
+                      <Button 
+                        onClick={() => router.push("/sign-up")}
+                        className="bg-white hover:bg-gray-100 text-gray-900 h-12 px-8 rounded-full text-lg"
+                      >
+                        Try ryznAI today!
+                      </Button>
+                      <Button 
+                        onClick={() => router.push("/sign-up")}
+                        className="bg-transparent hover:bg-white/10 text-white border-2 border-white h-12 px-8 rounded-full text-lg"
+                      >
+                        Get Started Free
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

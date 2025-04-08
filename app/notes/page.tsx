@@ -108,10 +108,12 @@ export default function Notes() {
           'application/pdf',
           'application/msword',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'text/plain'
+          'text/plain',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ];
         if (!allowedTypes.includes(selectedFile.type)) {
-          setError("Please select a valid file (PDF, DOC, DOCX, or TXT)");
+          setError("Please select a valid file (PDF, DOC, DOCX, TXT, PPT, or PPTX)");
           return;
         }
         if (selectedFile.size > 10 * 1024 * 1024) {

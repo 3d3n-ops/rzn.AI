@@ -43,7 +43,7 @@ export function Header() {
           <ThemeToggle />
           {isSignedIn ? (
             <Button onClick={handleSignInClick}>
-              Dashboard
+              Return to Dashboard
             </Button>
           ) : (
             <>
